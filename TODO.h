@@ -10,6 +10,10 @@ class TODO : public QMainWindow
 public:
     TODO(QWidget *parent = Q_NULLPTR);
 
+public slots:
+    int OnBtnAddtask();
+
 private:
+    QAbstractItemModel* tasklistmodel;
     Ui::TODOClass ui;
 };
