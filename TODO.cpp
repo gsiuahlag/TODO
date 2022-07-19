@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QCheckBox>
+#include "ChangeTaskInfomation.h"
 TODO::TODO(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -24,51 +25,49 @@ TODO::TODO(QWidget *parent)
 
     //插入数据方便测试
     
-    Task* task = new Task(++taskNumber, "test1", QDateTime(QDate::currentDate()));
+    Task* task = new Task(++taskNumber, "test1", QDateTime::currentDateTime());
     taskTodoArray.push_back(task);
     QTreeWidgetItem* item = new QTreeWidgetItem();
 	item->setData(0, Qt::UserRole, task->getId());
     item->setText(1, task->getName());
-	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
+	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
     ui.TrewTodoTasklist->addTopLevelItem(item);
     QCheckBox* qcb = new QCheckBox();
     connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
     ui.TrewTodoTasklist->setItemWidget(item, 0, qcb);
 
-	task = new Task(++taskNumber, "test2", QDateTime(QDate::currentDate()));
+	task = new Task(++taskNumber, "test2", QDateTime::currentDateTime().addSecs(20));
 	taskTodoArray.push_back(task);
 	item = new QTreeWidgetItem();
     item->setData(0, Qt::UserRole, task->getId());
 	item->setText(1, task->getName());
-	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
+	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
 	ui.TrewTodoTasklist->addTopLevelItem(item);
 	qcb = new QCheckBox();
 	connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
 	ui.TrewTodoTasklist->setItemWidget(item, 0, qcb);
 
-	task = new Task(++taskNumber, "test3", QDateTime(QDate::currentDate()));
+	task = new Task(++taskNumber, "test3", QDateTime::currentDateTime().addSecs(30));
 	taskTodoArray.push_back(task);
 	item = new QTreeWidgetItem();
 	item->setData(0, Qt::UserRole, task->getId());
 	item->setText(1, task->getName());
-	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
+	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
 	ui.TrewTodoTasklist->addTopLevelItem(item);
 	qcb = new QCheckBox();
 	connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
 	ui.TrewTodoTasklist->setItemWidget(item, 0, qcb);
 
-	task = new Task(++taskNumber, "test4", QDateTime(QDate::currentDate()));
+	task = new Task(++taskNumber, "test4", QDateTime::currentDateTime().addSecs(40));
 	taskTodoArray.push_back(task);
 	item = new QTreeWidgetItem();
 	item->setData(0, Qt::UserRole, task->getId());
 	item->setText(1, task->getName());
-	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
+	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
 	ui.TrewTodoTasklist->addTopLevelItem(item);
 	qcb = new QCheckBox();
 	connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
 	ui.TrewTodoTasklist->setItemWidget(item, 0, qcb);
-
-	
    
     //自定义绘制列表展示
     //ui.TrewTodoTasklist->setItemDelegate(new MyItemDrawer(ui.TrewTodoTasklist));
@@ -76,16 +75,44 @@ TODO::TODO(QWidget *parent)
     connect(ui.BtnAddtask, SIGNAL(clicked()), this, SLOT(OnBtnAddtask()));
 	connect(ui.BtnDeltask, SIGNAL(clicked()), this, SLOT(OnBtnDeltask()));
 	connect(ui.BtnSorttask, SIGNAL(clicked()), this, SLOT(OnBtnSorttask()));
+	connect(ui.TrewTodoTasklist, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(DoubleClickInwidget(QTreeWidgetItem*)));
 
+}
+int TODO::DoubleClickInwidget(QTreeWidgetItem* item)
+{
+	//获取当前选中item的id
+	int taskId = item->data(0, Qt::UserRole).toUInt();
+	for each (Task * var in taskTodoArray)
+	{
+		if (var->getId() == taskId)
+		{
+			//将选中的对象传给对话框
+			ChangeTaskInfomation changetaskinfomation(var, this);
+			//获取对话框返回值
+			int ret = changetaskinfomation.exec();
+			if (ret == QDialog::Accepted)
+			{
+				//复制从对话框中修改的数据项
+				var->parseFromNewtask(changetaskinfomation.getTask());
+				//更新显示
+				item->setText(1, var->getName());
+				item->setText(2, var->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
+			}
+			break;
+		}
+	}
+	return 0;
 
 }
 QTreeWidgetItem* TODO::insertItem(Task* task, QTreeWidget* widget)
 {
+	//新建item
 	QTreeWidgetItem* item = new QTreeWidgetItem();
+	//设置显示数据和task
 	item->setData(0, Qt::UserRole, task->getId());
 	item->setText(1, task->getName());
-	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
-
+	item->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm:ss")));
+	//添加item
     widget->addTopLevelItem(item);
     return item;
 }
@@ -196,7 +223,20 @@ int TODO::OnBtnDeltask()
 }
 int TODO::OnBtnSorttask()
 {
+	//按照日期降序或升序排列
+	if (sortItem)
+	{
+		ui.TrewTodoTasklist->sortItems(2, Qt::AscendingOrder);
+		ui.LabSorttips->setText(QString::fromLocal8Bit("从近到远"));
+		sortItem = !sortItem;
+	}
+	else
+	{
+		ui.TrewTodoTasklist->sortItems(2, Qt::DescendingOrder);
+		ui.LabSorttips->setText(QString::fromLocal8Bit("从远到近"));
+		sortItem = !sortItem;
 
+	}
 
     return 0;
 }

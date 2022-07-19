@@ -86,15 +86,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="TODO.qrc" />
+    <QtUic Include="ChangeTaskInfomation.ui" />
     <QtUic Include="TODO.ui" />
     <QtMoc Include="TODO.h" />
+    <ClCompile Include="ChangeTaskInfomation.cpp" />
     <ClCompile Include="MyItemDrawer.cpp" />
     <ClCompile Include="TODO.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MyItemDrawer.h" />
+    <QtMoc Include="ChangeTaskInfomation.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Task.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TODO.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
