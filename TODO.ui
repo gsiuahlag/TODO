@@ -6,82 +6,199 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>876</width>
+    <height>559</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TODO</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="BtnAddtask">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>30</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>添加任务</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
-      <width>54</width>
-      <height>12</height>
+      <y>20</y>
+      <width>204</width>
+      <height>25</height>
      </rect>
     </property>
-    <property name="text">
-     <string>任务名称</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="BtnAddtask">
+       <property name="text">
+        <string>添加任务</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="BtnSorttask">
+       <property name="text">
+        <string>排序任务</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>13</y>
+      <width>581</width>
+      <height>331</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QTreeWidget" name="TrewTodoTasklist">
+       <attribute name="headerVisible">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="headerCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="headerMinimumSectionSize">
+        <number>10</number>
+       </attribute>
+       <attribute name="headerDefaultSectionSize">
+        <number>75</number>
+       </attribute>
+       <attribute name="headerHighlightSections">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="headerShowSortIndicator" stdset="0">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>完成</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>任务名称</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>截止时间</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTreeWidget" name="TrewFinishTasklist">
+       <attribute name="headerDefaultSectionSize">
+        <number>80</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>完成</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>任务名称</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>截止时间</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>150</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>任务截至时间</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="LinTaskname">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>110</y>
-      <width>113</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QDateTimeEdit" name="DteTaskdeadline">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>190</y>
-      <width>194</width>
+      <width>200</width>
       <height>22</height>
      </rect>
     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>任务截至时间</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDateTimeEdit" name="DteTaskdeadline"/>
+     </item>
+    </layout>
    </widget>
-   <widget class="QListWidget" name="LwgTasklist">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>40</y>
-      <width>256</width>
-      <height>192</height>
+      <x>30</x>
+      <y>110</y>
+      <width>189</width>
+      <height>22</height>
      </rect>
     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>任务名称</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="LinTaskname"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>360</y>
+      <width>123</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="BtnDeltask">
+       <property name="text">
+        <string>删除任务</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -89,7 +206,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>876</width>
      <height>23</height>
     </rect>
    </property>

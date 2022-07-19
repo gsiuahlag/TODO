@@ -9,8 +9,9 @@ public:
 		this->Name = "NULL";
 		this->Deadline = QDateTime(QDate::currentDate());
 	}
-	Task(QString name, QDateTime deadline)
+	Task(int id, QString name, QDateTime deadline)
 	{
+		this->Id = id;
 		this->Name = name;
 		this->Deadline = deadline;
 	}
@@ -22,6 +23,10 @@ public:
 	{
 		this->Name = name;
 	}
+	int getId()
+	{
+		return Id;
+	}
 	QDateTime getDeadline()
 	{
 		return Deadline;
@@ -31,16 +36,13 @@ public:
 		this->Deadline = deadline;
 	}
 private:
+	int Id;
 	QString Name;
 	QDateTime Deadline;
 	bool Repeat;
 	QTime RepeatTime;	
 };
-Q_DECLARE_METATYPE(Task)
-
-
-
-
+Q_DECLARE_METATYPE(Task*)
 
 
 

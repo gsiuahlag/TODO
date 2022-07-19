@@ -10,7 +10,8 @@ void MyItemDrawer::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 	QRect rect = option.rect;
 	rect.adjust(2, 2, -2, -2);
 
-	Task task = index.data(Qt::UserRole).value<Task>();
+	Task* task = index.data(Qt::UserRole).value<Task*>();
+
 	//绘制选中样式
 	if (option.state & QStyle::State_Selected)
 	{
@@ -20,17 +21,29 @@ void MyItemDrawer::paint(QPainter* painter, const QStyleOptionViewItem& option, 
 		painter->drawRoundedRect(rect, 2, 2);
 		painter->setBrush(Qt::NoBrush);
 	}
+	//绘制完成按钮
 	if (1)
 	{
 		QRect dst = rect;
-		dst.setRight(rect.left() + 80);
-		painter->drawText(dst, Qt::AlignLeft | Qt::AlignVCenter, task.getName());
+		dst.adjust(2, 2, -2, -2);
+		dst.setRight(rect.left() + 10);
+		painter->drawEllipse(dst);
+
 	}
+	//绘制任务名字
+	if (1)
+	{
+		QRect dst = rect;
+		dst.setLeft(rect.left() + 20);
+		dst.setRight(rect.left() + 80);
+		painter->drawText(dst, Qt::AlignLeft | Qt::AlignVCenter, task->getName());
+	}
+	//绘制任务截至时间
 	if (1)
 	{
 		QRect dst = rect;
 		dst.setLeft(rect.left() + 80);
-		painter->drawText(dst, Qt::AlignLeft | Qt::AlignVCenter, task.getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
+		painter->drawText(dst, Qt::AlignLeft | Qt::AlignVCenter, task->getDeadline().toString(QString::fromLocal8Bit("yyyy年MM月dd日 hh:mm")));
 	}
 
 
