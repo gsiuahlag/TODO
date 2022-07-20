@@ -43,10 +43,19 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyItemDrawer.cpp">
+    <ClCompile Include="ChangeTaskInfomation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChangeTaskInfomation.cpp">
+    <ClCompile Include="DataSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AfSocket.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="AfThread_Win32.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,12 +66,18 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AfSocket.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="AfThread.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MyItemDrawer.h">
+    <QtMoc Include="ChangeTaskInfomation.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ChangeTaskInfomation.h">
+    <QtMoc Include="DataSource.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>559</height>
+    <width>845</width>
+    <height>484</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,8 +56,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>13</y>
+      <x>230</x>
+      <y>60</y>
       <width>581</width>
       <height>331</height>
      </rect>
@@ -98,10 +98,21 @@
          <string>截止时间</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>剩余循环次数</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item>
       <widget class="QTreeWidget" name="TrewFinishTasklist">
+       <property name="maximumSize">
+        <size>
+         <width>220</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <attribute name="headerDefaultSectionSize">
         <number>80</number>
        </attribute>
@@ -128,7 +139,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>150</y>
+      <y>130</y>
       <width>206</width>
       <height>22</height>
      </rect>
@@ -142,7 +153,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QDateTimeEdit" name="DteTaskdeadline"/>
+      <widget class="QDateTimeEdit" name="DteTaskdeadline">
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="currentSectionIndex">
+        <number>0</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -150,7 +168,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>110</y>
+      <y>100</y>
       <width>189</width>
       <height>22</height>
      </rect>
@@ -171,8 +189,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>360</y>
+      <x>690</x>
+      <y>400</y>
       <width>123</width>
       <height>25</height>
      </rect>
@@ -213,13 +231,54 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>431</x>
+      <y>11</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>当前时间</string>
+    </property>
+   </widget>
+   <widget class="QDateTimeEdit" name="DteNow">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>11</y>
+      <width>120</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="wrapping">
+     <bool>false</bool>
+    </property>
+    <property name="frame">
+     <bool>true</bool>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="displayFormat">
+     <string>yyyy/M/d H:mm:ss</string>
+    </property>
+    <property name="calendarPopup">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
+     <width>845</width>
      <height>23</height>
     </rect>
    </property>
