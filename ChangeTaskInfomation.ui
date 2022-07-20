@@ -26,7 +26,7 @@
     <string>是否循环</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
@@ -48,12 +48,12 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
      <y>37</y>
-     <width>176</width>
+     <width>182</width>
      <height>22</height>
     </rect>
    </property>
@@ -66,11 +66,15 @@
      </widget>
     </item>
     <item>
-     <widget class="QDateTimeEdit" name="Deadline"/>
+     <widget class="QDateTimeEdit" name="Deadline">
+      <property name="calendarPopup">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
@@ -92,12 +96,12 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>
      <y>115</y>
-     <width>148</width>
+     <width>154</width>
      <height>22</height>
     </rect>
    </property>
@@ -148,7 +152,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>9</x>

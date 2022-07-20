@@ -89,14 +89,19 @@
     <QtUic Include="ChangeTaskInfomation.ui" />
     <QtUic Include="TODO.ui" />
     <QtMoc Include="TODO.h" />
+    <ClCompile Include="AfSocket.cpp" />
+    <ClCompile Include="AfThread_Win32.cpp" />
     <ClCompile Include="ChangeTaskInfomation.cpp" />
-    <ClCompile Include="MyItemDrawer.cpp" />
+    <ClCompile Include="DataSource.cpp" />
+    <ClCompile Include="Task.cpp" />
     <ClCompile Include="TODO.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MyItemDrawer.h" />
     <QtMoc Include="ChangeTaskInfomation.h" />
+    <ClInclude Include="AfSocket.h" />
+    <ClInclude Include="AfThread.h" />
+    <QtMoc Include="DataSource.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Task.h" />
   </ItemGroup>
