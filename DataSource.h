@@ -7,10 +7,7 @@
 #include "Task.h"
 #include <QObject>
 #include <QTreeWidgetItem>
-enum TaskArray
-{
-	TodoArray, FinishArray
-};
+
 class DataSource :public QObject
 {
 	Q_OBJECT
@@ -19,16 +16,16 @@ public:
 	~DataSource();
 	Task* getFromTodoArray(int taskId);
 	Task* getFromFinishArray(int taskId);
-	void deleteFromTodoArray(int taskId, QTreeWidgetItem* t);
-	void deleteFromFinishArray(int taskId, QTreeWidgetItem* t);
+	void deleteFromTodoArray(int taskId);
+	void deleteFromFinishArray(int taskId);
 	void AddTodoArray(Task* task);
 	void AddFinishArray(Task* task);
-	Task* Translate(TaskArray a, TaskArray b, int taskId, QTreeWidgetItem* t);
-	Task* TaskFinishOnce(int taskId , QTreeWidgetItem* t);
+	Task* Translate(TaskArray a, TaskArray b, int taskId);
+	Task* TaskFinishOnce(int taskId);
 signals:
-	void DeleteTask(TaskArray, Task*, QTreeWidgetItem*);
+	void DeleteTask(TaskArray, Task*);
 	void AddTask(TaskArray, Task*);
-	void ChangeTask(TaskArray, Task*, QTreeWidgetItem*);
+	void ChangeTask(TaskArray, Task*);
 private:
 	AfTcpSocket client_sock;
 	std::list <Task*> taskTodoArray;

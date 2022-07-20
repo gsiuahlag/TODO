@@ -103,7 +103,7 @@
     <ClInclude Include="AfThread.h" />
     <QtMoc Include="DataSource.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Task.h" />
+    <QtMoc Include="Task.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TODO.rc" />

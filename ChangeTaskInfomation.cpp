@@ -17,7 +17,6 @@ ChangeTaskInfomation::ChangeTaskInfomation(Task* task, QWidget* parent)
 	{
 		ui.Repeat->setCheckState(Qt::Unchecked);
 	}
-	ui.RepeatCount->setText(QString::number(Ttask->getRepeatCount()));
 	ui.Length->setValue(Ttask->getRepeatTime().Length);
 	switch (Ttask->getRepeatTime().Unit)
 	{
@@ -64,7 +63,6 @@ void ChangeTaskInfomation::OnBtnOk()
 	{
 		Ttask->setRepeat(false);
 	}
-	Ttask->setRepeatCount(ui.RepeatCount->text().toInt());
 	switch (ui.Unit->currentIndex())
 	{
 	case 0:

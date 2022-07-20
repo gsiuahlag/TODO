@@ -100,7 +100,7 @@
        </column>
        <column>
         <property name="text">
-         <string>剩余循环次数</string>
+         <string>循环</string>
         </property>
        </column>
       </widget>

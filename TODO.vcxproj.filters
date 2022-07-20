@@ -60,9 +60,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +75,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DataSource.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Task.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

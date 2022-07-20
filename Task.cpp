@@ -5,7 +5,6 @@ Task::Task()
 	this->Name = "NULL";
 	this->Deadline = QDateTime(QDate::currentDate());
 	this->Repeat = false;
-	this->RepeatCount = 0;
 	this->RepeatTime.Length = 0;
 	this->RepeatTime.Unit = Year;
 }
@@ -37,22 +36,7 @@ void Task::setRepeat(bool repeat)
 {
 	this->Repeat = repeat;
 }
-int Task::getRepeatCount()
-{
-	return RepeatCount;
-}
-void Task::setRepeatCount(int repeatcount)
-{
-	this->RepeatCount = repeatcount;
-}
-int Task::getLastRepeatCount()
-{
-	return LastRepeatCount;
-}
-void Task::setLastRepeatCount(int lastrepeatcount)
-{
-	this->LastRepeatCount = lastrepeatcount;
-}
+
 
 //利用新的task作为自己的值
 void Task::parseFromNewtask(Task* newtask)
@@ -60,7 +44,6 @@ void Task::parseFromNewtask(Task* newtask)
 	this->Name = newtask->getName();
 	this->Deadline = newtask->getDeadline();
 	this->Repeat = newtask->getRepeat();
-	this->RepeatCount = newtask->getRepeatCount();
 	this->RepeatTime = newtask->getRepeatTime();
-	this->LastRepeatCount = newtask->getLastRepeatCount();
+	emit ChangeTask(TodoArray, this);
 }

@@ -32,8 +32,8 @@ public slots:
     int DoubleClickInwidget(QTreeWidgetItem*);
     int TimeOut();
     int AddTask(TaskArray, Task*);
-    int DeleteTask(TaskArray, Task*, QTreeWidgetItem*);
-	int ChangeTask(TaskArray, Task*, QTreeWidgetItem*);
+    int DeleteTask(TaskArray, Task*);
+	int ChangeTask(TaskArray, Task*);
 
 private:
    // QAbstractItemModel* tasklistmodel;

@@ -4,20 +4,41 @@ DataSource::DataSource()
 DataSource::~DataSource()
 {}
 
-Task* DataSource::TaskFinishOnce(int taskId, QTreeWidgetItem* t)
+Task* DataSource::TaskFinishOnce(int taskId)
 {
 	Task* var = NULL;
 	for each (var in taskTodoArray)
 	{
 		if (var->getId() == taskId)
 		{
-			//剩余循环次数-1
-			var->setLastRepeatCount(var->getLastRepeatCount() - 1);
-			emit ChangeTask(TodoArray, var,t);
-			//完成之后循环次数为0，则事件完成
-			if (var->getLastRepeatCount() <= 0)
+			if (var->getRepeat() == false)
 			{
-				this->Translate(TodoArray, FinishArray, var->getId(), t);
+				Translate(TodoArray, FinishArray, taskId);
+			}
+			else
+			{
+				int length = var->getRepeatTime().Length;
+				switch (var->getRepeatTime().Unit)
+				{
+				case Year:
+					var->setDeadline(var->getDeadline().addYears(length));
+					break;
+				case Month:
+					var->setDeadline(var->getDeadline().addMonths(length));
+					break;
+				case Week:
+					var->setDeadline(var->getDeadline().addDays(length));
+					break;
+				case Day:
+					var->setDeadline(var->getDeadline().addSecs(length * 3600));
+					break;
+				case Hour:
+					var->setDeadline(var->getDeadline().addSecs(length));
+					break;
+				default:
+					break;
+				}
+				emit ChangeTask(TodoArray, var);
 			}
 			return var;
 		}
@@ -55,33 +76,33 @@ void DataSource::AddFinishArray(Task* task)
 	taskFinishArray.push_back(task);
 	emit AddTask(FinishArray, task);
 }
-void DataSource::deleteFromTodoArray(int taskId, QTreeWidgetItem* t)
+void DataSource::deleteFromTodoArray(int taskId)
 {
 	for each (Task * var in taskTodoArray)
 	{
 		if (var->getId() == taskId)
 		{
 			taskTodoArray.remove(var);
-			emit DeleteTask(TodoArray, var, t);
+			emit DeleteTask(TodoArray, var);
 			delete var;
 			break;
 		}
 	}
 }
-void DataSource::deleteFromFinishArray(int taskId, QTreeWidgetItem* t)
+void DataSource::deleteFromFinishArray(int taskId)
 {
 	for each (Task * var in taskFinishArray)
 	{
 		if (var->getId() == taskId)
 		{
 			taskFinishArray.remove(var);
-			emit DeleteTask(FinishArray, var, t);
+			emit DeleteTask(FinishArray, var);
 			delete var;
 			break;
 		}
 	}
 }
-Task* DataSource::Translate(TaskArray a, TaskArray b, int taskId,QTreeWidgetItem* t)
+Task* DataSource::Translate(TaskArray a, TaskArray b, int taskId)
 {
 	if (a == TodoArray)
 	{
@@ -92,7 +113,7 @@ Task* DataSource::Translate(TaskArray a, TaskArray b, int taskId,QTreeWidgetItem
 				if (var->getId() == taskId)
 				{
 					taskTodoArray.remove(var);
-					emit DeleteTask(TodoArray, var,t);
+					emit DeleteTask(TodoArray, var);
 					taskFinishArray.push_back(var);
 					emit AddTask(FinishArray, var);;
 					return var;
@@ -109,7 +130,7 @@ Task* DataSource::Translate(TaskArray a, TaskArray b, int taskId,QTreeWidgetItem
 				if (var->getId() == taskId)
 				{
 					taskFinishArray.remove(var);
-					emit DeleteTask(FinishArray, var,t);
+					emit DeleteTask(FinishArray, var);
 					taskTodoArray.push_back(var);
 					emit AddTask(TodoArray, var);;
 					return var;
