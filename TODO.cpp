@@ -2,10 +2,11 @@
 #include "Task.h"
 #include <QMessageBox>
 #include <QDebug>
+#include <QQueue>
 #include <QCheckBox>
 #include <QTimer>
 #include "ChangeTaskInfomation.h"
-
+#include "AddTaskChild.h"
 TODO::TODO(QWidget* parent)
 	: QMainWindow(parent)
 {
@@ -27,27 +28,31 @@ TODO::TODO(QWidget* parent)
 	//tasklistmodel = ui.TrewTodoTasklist->model();
 
 	//设置字体数据
-
+	// 
+	//设置右键菜单
+	taskDelete = new QAction(QString::fromLocal8Bit("删除任务"));
+	taskUpdate = new QAction(QString::fromLocal8Bit("更新任务"));
+	taskNewChild = new QAction(QString::fromLocal8Bit("新建步骤"));
 
 	//插入数据方便测试
 
-	Task* task = new Task("test1", QDateTime::currentDateTime(), true, 10, Hour);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	Task* task = new Task("test1", QDateTime::currentDateTime(), NULL, true, 10, Hour);
+	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	datasource.AddTodoArray(task);
 	insertItem(task, ui.TrewTodoTasklist, Todo);
 
-	task = new Task("test2", QDateTime::currentDateTime().addSecs(10), false);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	task = new Task("test2", QDateTime::currentDateTime().addSecs(10), NULL, false);
+	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	datasource.AddTodoArray(task);
 	insertItem(task, ui.TrewTodoTasklist, Todo);
 
-	task = new Task("test3", QDateTime::currentDateTime().addSecs(15), true, 5, Day);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	task = new Task("test3", QDateTime::currentDateTime().addSecs(15), NULL, true, 5, Day);
+	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	datasource.AddTodoArray(task);
 	insertItem(task, ui.TrewTodoTasklist, Todo);
 
-	task = new Task("test4", QDateTime::currentDateTime().addSecs(20), true, 4,Week);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	task = new Task("test4", QDateTime::currentDateTime().addSecs(20), NULL, true, 4,Week);
+	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	datasource.AddTodoArray(task);
 	insertItem(task, ui.TrewTodoTasklist, Todo);
 
@@ -57,18 +62,109 @@ TODO::TODO(QWidget* parent)
 	connect(ui.BtnAddtask, SIGNAL(clicked()), this, SLOT(OnBtnAddtask()));
 	connect(ui.BtnDeltask, SIGNAL(clicked()), this, SLOT(OnBtnDeltask()));
 	connect(ui.BtnSorttask, SIGNAL(clicked()), this, SLOT(OnBtnSorttask()));
+	//双击事件
 	connect(ui.TrewTodoTasklist, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(DoubleClickInwidget(QTreeWidgetItem*)));
+	//定时器
 	connect(qtimer, SIGNAL(timeout()), this, SLOT(TimeOut()));
-	connect(&datasource, SIGNAL(AddTask(TaskArray, Task*)), this, SLOT(AddTask(TaskArray, Task*)));
-	connect(&datasource, SIGNAL(DeleteTask(TaskArray, Task*)), this, SLOT(DeleteTask(TaskArray, Task*)));
-	connect(&datasource, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	//界面更新
+	connect(&datasource, SIGNAL(AddTask(TaskArray, Task*, TaskPlace, Task*)), this, SLOT(AddTaskItem(TaskArray, Task*, TaskPlace, Task*)));
+	connect(&datasource, SIGNAL(DeleteTask(TaskArray, Task*)), this, SLOT(DeleteTaskItem(TaskArray, Task*)));
+	connect(&datasource, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
+	//右键菜单
+	connect(ui.TrewTodoTasklist, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(RightClickedInTodo(QTreeWidgetItem*)));
+	connect(ui.TrewFinishTasklist, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(RightClickedInFinish(QTreeWidgetItem*)));
+	connect(taskDelete, SIGNAL(triggered()), this, SLOT(DeleteTask()));
+	connect(taskUpdate, SIGNAL(triggered()), this, SLOT(UpdateTask()));
+	connect(taskNewChild, SIGNAL(triggered()), this, SLOT(NewChildTask()));
 
 }
-int TODO::AddTask(TaskArray taskarray, Task* task)
+
+int TODO::DeleteTask()
+{
+	//尝试在两个地方删除数据
+	datasource.deleteFromTodoArray(taskDelete->data().toInt());
+	datasource.deleteFromFinishArray(taskDelete->data().toInt());
+	return 0;
+}
+int TODO::UpdateTask()
+{
+	//获取当前选中item的id
+	int taskId = taskUpdate->data().toUInt();
+	//只有在Todo中的任务可以修改
+	Task* var = datasource.getFromTodoArray(taskId);
+	//将选中的对象传给对话框
+	ChangeTaskInfomation changetaskinfomation(var, this);
+	//获取对话框返回值
+	int ret = changetaskinfomation.exec();
+	if (ret == QDialog::Accepted)
+	{
+		//复制从对话框中修改的数据项
+		var->pasteFromNewtask(changetaskinfomation.Ttask);
+	}
+	return 0;
+}
+int TODO::NewChildTask()
+{
+	//获取当前选中item的id
+	int taskId = taskNewChild->data().toUInt();
+	Task* var = datasource.getFromTodoArray(taskId);
+	//将选中的对象传给对话框
+	AddTaskChild addtaskchild(var, this);
+	//获取对话框返回值
+	int ret = addtaskchild.exec();
+	if (ret == QDialog::Accepted)
+	{
+		//关联task的更新
+		connect(addtaskchild.Newprocedure, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
+		datasource.AddTodoArray(addtaskchild.Newprocedure, Son, var);
+	}
+
+	return 0;
+}
+int TODO::RightClickedInTodo(QTreeWidgetItem* item)
+{
+	//判断是否为右键
+	if (qApp->mouseButtons() == Qt::RightButton)  
+	{
+		rightMenu = new QMenu(ui.TrewTodoTasklist);
+		//把数据传递给选项
+		taskDelete->setData(item->data(0, Qt::UserRole));
+		taskUpdate->setData(item->data(0, Qt::UserRole));
+		taskNewChild->setData(item->data(0, Qt::UserRole));
+		rightMenu->addAction(taskDelete);
+		rightMenu->addAction(taskUpdate);
+		rightMenu->addAction(taskNewChild);
+		rightMenu->exec(QCursor::pos());   //菜单弹出位置为鼠标点击位置
+	}
+	return 0;
+}
+int TODO::RightClickedInFinish(QTreeWidgetItem* item)
+{
+	//判断是否为右键
+	if (qApp->mouseButtons() == Qt::RightButton)
+	{
+		rightMenu = new QMenu(ui.TrewFinishTasklist);
+		taskDelete->setData(item->data(0, Qt::UserRole));
+		rightMenu->addAction(taskDelete);
+		rightMenu->exec(QCursor::pos());   //菜单弹出位置为鼠标点击位置
+	}
+	return 0;
+}
+int TODO::AddTaskItem(TaskArray taskarray, Task* task, TaskPlace place, Task* father)
 {
 	if (taskarray == TodoArray)
 	{
-		insertItem(task, ui.TrewTodoTasklist, Todo);
+		if (place == Father)
+		{
+			insertItem(task, ui.TrewTodoTasklist, Todo);
+		}
+		else if (place == Son)
+		{
+			//Son在Todo中，那father也在Todo中
+			QTreeWidgetItem* faitem = getTaskItemById(father->getId(), ui.TrewTodoTasklist);
+			insertItem(task, ui.TrewTodoTasklist, Todo, Son, faitem);
+		}
+		
 	}
 	else if (taskarray == FinishArray)
 	{
@@ -76,114 +172,102 @@ int TODO::AddTask(TaskArray taskarray, Task* task)
 	}
 	return 0;
 }
-int TODO::DeleteTask(TaskArray taskarray, Task* task)
+
+int TODO::DeleteTaskItem(TaskArray taskarray, Task* task)
 {
 	if (taskarray == TodoArray)
 	{
-		int Counts = ui.TrewTodoTasklist->topLevelItemCount();
-		QTreeWidgetItem* var = ui.TrewTodoTasklist->topLevelItem(0);
-		for (int i = 0; i < Counts; i++)
-		{
-			if (task->getId() == var->data(0, Qt::UserRole).toInt())
-			{
-				delete var;
-				break;
-			}
-			var = ui.TrewTodoTasklist->itemBelow(var);
-		}
+		QTreeWidgetItem* var = getTaskItemById(task->getId(), ui.TrewTodoTasklist);
+		delete var;
 		return 0;
 	}
 	else if (taskarray == FinishArray)
 	{
-		int Counts = ui.TrewFinishTasklist->topLevelItemCount();
-		QTreeWidgetItem* var = ui.TrewFinishTasklist->topLevelItem(0);
-		for (int i = 0; i < Counts; i++)
-		{
-			if (task->getId() == var->data(0, Qt::UserRole).toInt())
-			{
-				delete var;
-				break;
-			}
-			var = ui.TrewFinishTasklist->itemBelow(var);
-		}
+		QTreeWidgetItem* var = getTaskItemById(task->getId(), ui.TrewFinishTasklist);
+		delete var;
+		return 0;
+	}
+	else
+	{
 		return 0;
 	}
 }
-int TODO::ChangeTask(TaskArray taskarray, Task* task)
+int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 {
 	if (taskarray == TodoArray)
 	{
-		int Counts = ui.TrewTodoTasklist->topLevelItemCount();
-		QTreeWidgetItem* var = ui.TrewTodoTasklist->topLevelItem(0);
-		for (int i = 0; i < Counts; i++)
+		QTreeWidgetItem* var = getTaskItemById(task->getId(),ui.TrewTodoTasklist);
+		var->setText(1, task->getName());
+		var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
+		if (task->getRepeat())
 		{
-			if (task->getId() == var->data(0, Qt::UserRole).toInt())
-			{
-				var->setText(1, task->getName());
-				var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
-				if (task->getRepeat())
-				{
-					var->setText(3, QString::fromLocal8Bit("是"));
-				}
-				else
-				{
-					var->setText(3, QString::fromLocal8Bit("否"));
-				}
-				break;
-			}
-			var = ui.TrewTodoTasklist->itemBelow(var);
-
+			var->setText(3, QString::fromLocal8Bit("是"));
+		}
+		else
+		{
+			var->setText(3, QString::fromLocal8Bit("否"));
 		}
 		return 0;
 	}
 	else if (taskarray == FinishArray)
 	{
-		int Counts = ui.TrewFinishTasklist->topLevelItemCount();
-		QTreeWidgetItem* var = ui.TrewFinishTasklist->topLevelItem(0);
-		for (int i = 0; i < Counts; i++)
+		QTreeWidgetItem* var = getTaskItemById(task->getId(), ui.TrewFinishTasklist);
+		var->setText(1, task->getName());
+		var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
+		if (task->getRepeat())
 		{
-			if (task->getId() == var->data(0, Qt::UserRole).toInt())
-			{
-				var->setText(1, task->getName());
-				var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
-				if (task->getRepeat())
-				{
-					var->setText(3, QString::fromLocal8Bit("是"));
-				}
-				else
-				{
-					var->setText(3, QString::fromLocal8Bit("否"));
-				}
-				break;
-			}
-			var = ui.TrewFinishTasklist->itemBelow(var);
-
+			var->setText(3, QString::fromLocal8Bit("是"));
 		}
+		else
+		{
+			var->setText(3, QString::fromLocal8Bit("否"));
+		}
+		return 0;
+	}
+	else
+	{
 		return 0;
 	}
 }
 int TODO::TimeOut()
 {
+	//获取当前时间
 	QDateTime Nowtime = QDateTime::currentDateTime();
 	ui.DteNow->setDateTime(Nowtime);
-	int Counts = ui.TrewTodoTasklist->topLevelItemCount();
-	QTreeWidgetItem* var = ui.TrewTodoTasklist->topLevelItem(0);
-	for (int i = 0; i < Counts; i++)
+	int i = 0, j = 0;
+	QQueue<QTreeWidgetItem*> q;
+	QTreeWidgetItem* father = ui.TrewTodoTasklist->topLevelItem(i);
+	QTreeWidgetItem* son = NULL;
+	QTreeWidgetItem* item = NULL;
+	while (father != NULL)
 	{
-		Task* task = datasource.getFromTodoArray(var->data(0, Qt::UserRole).toInt());
-		if (task->getDeadline() < Nowtime)
+		q.push_back(father);
+		while (!q.isEmpty())
 		{
-			var->setTextColor(1, Qt::red);
-			var->setTextColor(2, Qt::red);
-			var->setTextColor(3, Qt::red);
+			item = q.front();
+			q.pop_front();
+			if (datasource.getFromTodoArray(item->data(0, Qt::UserRole).toUInt())->getDeadline() < Nowtime)
+			{
+
+				item->setTextColor(1, Qt::red);
+				item->setTextColor(2, Qt::red);
+				item->setTextColor(3, Qt::red);
+			}
+			else
+			{
+				item->setTextColor(1, Qt::black);
+				item->setTextColor(2, Qt::black);
+				item->setTextColor(3, Qt::black);
+			}
+			son = item->child(j);
+			while (son)
+			{
+				q.push_back(son);
+				son = item->child(++j);
+			}
 		}
-		else
-		{
-			var->setTextColor(1, Qt::black);
-			var->setTextColor(2, Qt::black);
-			var->setTextColor(3, Qt::black);
-		}
-		var = ui.TrewTodoTasklist->itemBelow(var);
+		//处理下一个根节点
+		father = ui.TrewTodoTasklist->topLevelItem(++i);
 	}
 	return 0;
 }
@@ -199,13 +283,20 @@ int TODO::DoubleClickInwidget(QTreeWidgetItem* item)
 	if (ret == QDialog::Accepted)
 	{
 		//复制从对话框中修改的数据项
-		var->parseFromNewtask(changetaskinfomation.getTask());
+		var->pasteFromNewtask(changetaskinfomation.Ttask);
 	}
 	return 0;
-
 }
-void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state)
+QTreeWidgetItem* TODO::newItem(int taskId, Task* task)
 {
+	if (task == NULL)
+	{
+		task = datasource.getFromArray(taskId);
+		if (task == NULL)
+		{
+			return NULL;
+		}
+	}
 	//新建item
 	QTreeWidgetItem* item = new QTreeWidgetItem();
 	//设置显示数据和task
@@ -220,8 +311,10 @@ void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state)
 	{
 		item->setText(3, QString::fromLocal8Bit("否"));
 	}
-	//添加item
-	widget->addTopLevelItem(item);
+	return item;
+}
+QCheckBox* TODO::newQCheckbox(QTreeWidgetItem* item, Task* task, TaskState state)
+{
 	//构造复选框
 	QCheckBox* qcb = new QCheckBox();
 	//先设置状态再关联信号和槽
@@ -244,8 +337,63 @@ void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state)
 	}
 	//关联复选框信号和槽
 	connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
-	widget->setItemWidget(item, 0, qcb);
-
+	return qcb;
+}
+QTreeWidgetItem* TODO::getTaskItemById(int taskId, QTreeWidget* widget)
+{
+	//获取根节点个数
+	int size = widget->topLevelItemCount();
+	QQueue<QTreeWidgetItem*> q;
+	QTreeWidgetItem* father = NULL;
+	QTreeWidgetItem* son = NULL;
+	for (int i = 0; i < size; i++)
+	{
+		father = widget->topLevelItem(i);
+		q.push_back(father);
+		while (!q.isEmpty())
+		{
+			son = q.front();
+			q.pop_front();
+			if (son->data(0, Qt::UserRole).toInt() == taskId)
+			{
+				return son;
+			}
+			for (int j = 0; j < son->childCount(); j++)
+			{
+				if (son->child(j)->data(0, Qt::UserRole).toInt() == taskId)
+				{
+					return son->child(j);
+				}
+				q.push_back(son->child(j));
+			}
+		}
+	}
+	return NULL;
+}
+void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlace place, QTreeWidgetItem* father)
+{
+	if (place == Father)
+	{	
+		//新建item
+		QTreeWidgetItem* item = newItem(task->getId(), task);
+		//添加item
+		widget->addTopLevelItem(item);
+		//生成复选框
+		QCheckBox* qcb = newQCheckbox(item, task, state);
+		//添加复选框
+		widget->setItemWidget(item, 0, qcb);
+	}
+	else if (place == Son)
+	{
+		//新建item
+		QTreeWidgetItem* son = newItem(task->getId(), task);
+		//添加item
+		father->addChild(son);
+		//构造复选框
+		QCheckBox* qcb = newQCheckbox(son, task, Todo);
+		//添加复选框
+		widget->setItemWidget(son, 0, qcb);
+	}
 }
 int TODO::Changetaskstate(int id)
 {
@@ -297,7 +445,7 @@ int TODO::OnBtnAddtask()
 	//加入数据源
 	datasource.AddTodoArray(task);
 	//关联信号
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTask(TaskArray, Task*)));
+	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	//文本框置空
 	ui.LinTaskname->setText("");
 	//QMessageBox::information(this, QString::fromLocal8Bit("成功"), QString::fromLocal8Bit("插入成功"));

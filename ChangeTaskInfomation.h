@@ -11,13 +11,11 @@ public:
 	ChangeTaskInfomation(Task* task, QWidget* parent = nullptr);
 	~ChangeTaskInfomation();
 public:
-	Task* getTask();
+	Task* Ttask;
 public slots:
 	void OnBtnOk();
 	void OnBtnCancel();
 private:
-	Task* Ttask;
-	void setTask(Task* t);
 private:
 	Ui::ChangeTaskInfomationClass ui;
 };

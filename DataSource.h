@@ -7,6 +7,7 @@
 #include "Task.h"
 #include <QObject>
 #include <QTreeWidgetItem>
+#include <QQueue>
 
 class DataSource :public QObject
 {
@@ -16,15 +17,17 @@ public:
 	~DataSource();
 	Task* getFromTodoArray(int taskId);
 	Task* getFromFinishArray(int taskId);
+	Task* getFromArray(int taskId);
 	void deleteFromTodoArray(int taskId);
 	void deleteFromFinishArray(int taskId);
-	void AddTodoArray(Task* task);
-	void AddFinishArray(Task* task);
+	void AddTodoArray(Task* task, TaskPlace place = Father, Task* farther = NULL);
+	void AddFinishArray(Task* task, TaskPlace place, Task* father);
 	Task* Translate(TaskArray a, TaskArray b, int taskId);
 	Task* TaskFinishOnce(int taskId);
+	void deleteTask(Task*, Task*);
 signals:
 	void DeleteTask(TaskArray, Task*);
-	void AddTask(TaskArray, Task*);
+	void AddTask(TaskArray, Task* son, TaskPlace = Father, Task* = NULL);
 	void ChangeTask(TaskArray, Task*);
 private:
 	AfTcpSocket client_sock;

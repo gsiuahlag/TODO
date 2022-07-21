@@ -42,14 +42,7 @@ ChangeTaskInfomation::ChangeTaskInfomation(Task* task, QWidget* parent)
 	connect(ui.BtnOk, SIGNAL(clicked()), this, SLOT(OnBtnOk()));
 	connect(ui.BtnCancel, SIGNAL(clicked()), this, SLOT(OnBtnCancel()));
 }
-Task* ChangeTaskInfomation::getTask()
-{
-	return this->Ttask;
-}
-void ChangeTaskInfomation::setTask(Task* t)
-{
-	this->Ttask = t;
-}
+
 void ChangeTaskInfomation::OnBtnOk()
 {
 	//获取修改后的信息，赋值给自己的task
