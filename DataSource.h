@@ -18,12 +18,19 @@ public:
 	Task* getFromTodoArray(int taskId);
 	Task* getFromFinishArray(int taskId);
 	Task* getFromArray(int taskId);
+	Task* GetTaskTopFather(int taskId);
+	Task* GetTaskTopFather(Task* task);
+	QList<Task*>* GetTaskAllChild(Task* task);
+	QList<Task*>* GetTaskAllChild(int taskId);
+
 	void deleteFromTodoArray(int taskId);
 	void deleteFromFinishArray(int taskId);
 	void AddTodoArray(Task* task, TaskPlace place = Father, Task* farther = NULL);
 	void AddFinishArray(Task* task, TaskPlace place, Task* father);
 	Task* Translate(TaskArray a, TaskArray b, int taskId);
+	Task* Translate(TaskArray a, TaskArray b, Task* task);
 	Task* TaskFinishOnce(int taskId);
+	Task* TaskRedo(int taskId, TaskArray array);
 	void deleteTask(Task*, Task*);
 signals:
 	void DeleteTask(TaskArray, Task*);

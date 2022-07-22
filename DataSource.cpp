@@ -3,46 +3,93 @@ DataSource::DataSource()
 {}
 DataSource::~DataSource()
 {}
-
+Task* DataSource::GetTaskTopFather(int taskId)
+{
+	Task* var = getFromArray(taskId);
+	while (var->getFatherTask())
+	{
+		var = var->getFatherTask();
+	}
+	return var;
+}
+Task* DataSource::GetTaskTopFather(Task* task)
+{
+	while (task->getFatherTask())
+	{
+		task = task->getFatherTask();
+	}
+	return task;
+}
+QList<Task*>* DataSource::GetTaskAllChild(Task* task)
+{
+	return NULL;
+}
+QList<Task*>* DataSource::GetTaskAllChild(int taskId)
+{
+	return NULL;
+}
 Task* DataSource::TaskFinishOnce(int taskId)
 {
 	Task* var = NULL;
-	for each (var in taskTodoArray)
+	Task* ret = getFromTodoArray(taskId);
+	var = ret;
+	//任务或步骤完成，任务或步骤的子节点全部完成
+	QQueue<Task*> q;
+	q.push_back(var);
+	while (!q.isEmpty())
 	{
-		if (var->getId() == taskId)
+		var = q.front();
+		q.pop_front();
+		var->setIsFinish(true);
+		emit ChangeTask(TodoArray, var);
+		QListIterator<Task*> itor(*var->getprocedureTask());
+		for (itor.toFront(); itor.hasNext();)
 		{
-			if (var->getRepeat() == false)
-			{
-				Translate(TodoArray, FinishArray, taskId);
-			}
-			else
-			{
-				int length = var->getRepeatTime().Length;
-				switch (var->getRepeatTime().Unit)
-				{
-				case Year:
-					var->setDeadline(var->getDeadline().addYears(length));
-					break;
-				case Month:
-					var->setDeadline(var->getDeadline().addMonths(length));
-					break;
-				case Week:
-					var->setDeadline(var->getDeadline().addDays(length));
-					break;
-				case Day:
-					var->setDeadline(var->getDeadline().addSecs(length * 3600));
-					break;
-				case Hour:
-					var->setDeadline(var->getDeadline().addSecs(length));
-					break;
-				default:
-					break;
-				}
-				emit ChangeTask(TodoArray, var);
-			}
-			return var;
+			q.push_back(itor.next());
 		}
 	}
+	//如果是根节点则需要移动到finish中
+	if (ret->getFatherTask() == NULL)
+	{
+		if (ret->getRepeat() == false)
+		{
+			//根节点完成要转移到完成列表
+			Translate(TodoArray, FinishArray, ret);
+		}
+		else
+		{
+			ret->repeatOnce();
+		}
+	}
+	return ret;
+}
+Task* DataSource::TaskRedo(int taskId, TaskArray array)
+{
+	Task* var = NULL;
+	if (array == TodoArray)
+	{
+		//在TodoArray中重做，一定是步骤,此时不需要转移数据
+		var = getFromTodoArray(taskId);
+		//重做步骤步骤的所有子步骤全部重做
+		var->redoTask(TodoArray);
+		
+	}
+	else if (array == FinishArray)
+	{
+		//在FinishArray中重做，无论是步骤重做还是任务重做，都需要把根任务重做
+		var = getFromFinishArray(taskId);
+		var->redoTask(FinishArray);
+		if (var->getFatherTask() == NULL)//如果自己本身就是根节点，直接转移自己就好了
+		{
+			Translate(FinishArray, TodoArray, var);
+		}
+		else
+		{
+			var = GetTaskTopFather(var);//获取它的最高根节点
+			Translate(FinishArray, TodoArray, var);//转移
+		}
+	}
+	return var;
 }
 
 Task* DataSource::getFromArray(int taskId)
@@ -250,6 +297,39 @@ void DataSource::deleteFromFinishArray(int taskId)
 		delete task;
 	}*/
 }
+Task* DataSource::Translate(TaskArray a, TaskArray b, Task* task)
+{
+	if (a == TodoArray)
+	{
+		if (b == FinishArray)
+		{
+			//从Todo到Finish一定是任务
+			taskTodoArray.remove(task);
+			emit DeleteTask(TodoArray, task);
+			taskFinishArray.push_back(task);
+			emit AddTask(FinishArray, task);
+			return task;
+		}
+	}
+	else if (a == FinishArray)
+	{
+		if (b == TodoArray)
+		{
+			//从Finish到Todo也一定是任务
+			taskFinishArray.remove(task);
+			emit DeleteTask(FinishArray, task);
+			taskTodoArray.push_back(task);
+			emit AddTask(TodoArray, task);
+			return task;
+		}
+	}
+	else
+	{
+		return NULL;
+	}
+	return NULL;
+}
+
 Task* DataSource::Translate(TaskArray a, TaskArray b, int taskId)
 {
 	if (a == TodoArray)

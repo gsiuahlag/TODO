@@ -2,6 +2,7 @@
 #define _TASK_H
 #include <QDate>
 #include <QObject>
+#include <QQueue>
 enum MyUnit
 {
 	Year,Month,Week,Day,Hour
@@ -38,6 +39,7 @@ public:
 		this->RepeatTime.Unit = unit;
 		this->procedureTask = proceduretask;
 		this->FatherTask = fathertask;
+		this->IsFinish = false;
 	}
 	~Task();
 	//getter and setter
@@ -60,7 +62,9 @@ public:
 	void setprocedureTask(QList<Task*>* proceduretask);
 	Task* getFatherTask();
 	void setFatherTask(Task* fathertask);
-
+	bool getIsFinish();
+	void setIsFinish(bool isfinish);
+	
 	//产生一个新的task副本，返回指针
 	static Task* Task::copyFromOldtask(Task* oldtask)
 	{
@@ -69,6 +73,7 @@ public:
 		newtask->setName(oldtask->getName());
 		newtask->setRepeat(oldtask->getRepeat());
 		newtask->setRepeatTime(oldtask->getRepeatTime());
+		newtask->setIsFinish(oldtask->getIsFinish());
 		//修改不涉及任务和步骤之间的关系，子节点列表指针和父节点指针 浅拷贝
 		//现阶段的拷贝仅仅进行任务数据修改，父节点数据可以不改
 		//newtask->setprocedureTask(oldtask->getprocedureTask());
@@ -77,7 +82,10 @@ public:
 	}
 	//利用新的task作为自己的值
 	void pasteFromNewtask(Task* newtask);
+	void repeatOnce();
+	void redoTask(TaskArray);
 	static int taskNumber;
+
 signals:
 	void ChangeTask(TaskArray, Task*);
 private:
@@ -88,6 +96,7 @@ private:
 	MyTime RepeatTime;
 	QList <Task* > *procedureTask;
 	Task* FatherTask;
+	bool IsFinish;
 };
 
 #endif // _TASK_H

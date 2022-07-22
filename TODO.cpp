@@ -5,6 +5,7 @@
 #include <QQueue>
 #include <QCheckBox>
 #include <QTimer>
+
 #include "ChangeTaskInfomation.h"
 #include "AddTaskChild.h"
 TODO::TODO(QWidget* parent)
@@ -78,7 +79,7 @@ TODO::TODO(QWidget* parent)
 	connect(taskNewChild, SIGNAL(triggered()), this, SLOT(NewChildTask()));
 
 }
-
+//右键菜单和事件处理
 int TODO::DeleteTask()
 {
 	//尝试在两个地方删除数据
@@ -150,13 +151,38 @@ int TODO::RightClickedInFinish(QTreeWidgetItem* item)
 	}
 	return 0;
 }
+//界面更新
 int TODO::AddTaskItem(TaskArray taskarray, Task* task, TaskPlace place, Task* father)
 {
 	if (taskarray == TodoArray)
 	{
 		if (place == Father)
 		{
-			insertItem(task, ui.TrewTodoTasklist, Todo);
+			//插入一条Father记录，如果有儿子节点要把儿子节点插入
+			//QTreeWidgetItem* fa = insertItem(task, ui.TrewTodoTasklist, Todo);
+			//QTreeWidgetItem* fa = NULL;
+			//遍历插入儿子,效率？遍历儿子是O（n）,插入后查找父亲也是O（n），整个复杂度为O（n^2）
+			QStack<Task*> stack;
+			Task* p;
+			stack.push(task);
+			while (!stack.isEmpty())
+			{
+				p = stack.top();
+				stack.pop();
+				if (p->getFatherTask() == NULL)
+				{
+					insertItem(p, ui.TrewTodoTasklist, Todo);
+				}
+				else
+				{
+					AddTaskItem(TodoArray, p, Son, p->getFatherTask());
+				}
+				QListIterator<Task*> itor(*p->getprocedureTask());
+				for (itor.toBack(); itor.hasPrevious();)
+				{
+					stack.push(itor.previous());
+				}
+			}
 		}
 		else if (place == Son)
 		{
@@ -168,11 +194,40 @@ int TODO::AddTaskItem(TaskArray taskarray, Task* task, TaskPlace place, Task* fa
 	}
 	else if (taskarray == FinishArray)
 	{
-		insertItem(task, ui.TrewFinishTasklist, Finish);
+		if (place == Father)
+		{
+			//遍历插入儿子,效率？遍历儿子是O（n）,插入后查找父亲也是O（n），整个复杂度为O（n^2）
+			QStack<Task*> stack;
+			Task* p;
+			stack.push(task);
+			while (!stack.isEmpty())
+			{
+				p = stack.top();
+				stack.pop();
+				if (p->getFatherTask() == NULL)
+				{
+					insertItem(p, ui.TrewFinishTasklist, Finish);
+				}
+				else
+				{
+					AddTaskItem(FinishArray, p, Son, p->getFatherTask());
+				}
+				QListIterator<Task*> itor(*p->getprocedureTask());
+				for (itor.toBack(); itor.hasPrevious();)
+				{
+					stack.push(itor.previous());
+				}
+			}
+		}
+		else if (place == Son)
+		{
+			//Son在Finish中，那father也在Finish中
+			QTreeWidgetItem* faitem = getTaskItemById(father->getId(), ui.TrewFinishTasklist);
+			insertItem(task, ui.TrewFinishTasklist, Finish, Son, faitem);
+		}
 	}
 	return 0;
 }
-
 int TODO::DeleteTaskItem(TaskArray taskarray, Task* task)
 {
 	if (taskarray == TodoArray)
@@ -194,41 +249,59 @@ int TODO::DeleteTaskItem(TaskArray taskarray, Task* task)
 }
 int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 {
+	QTreeWidgetItem* var;
 	if (taskarray == TodoArray)
 	{
-		QTreeWidgetItem* var = getTaskItemById(task->getId(),ui.TrewTodoTasklist);
-		var->setText(1, task->getName());
-		var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
-		if (task->getRepeat())
+		var = getTaskItemById(task->getId(),ui.TrewTodoTasklist);
+		//如果任务/步骤完成
+		if (task->getIsFinish())
 		{
-			var->setText(3, QString::fromLocal8Bit("是"));
+			QCheckBox* qcb = (QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0);
+			setItemColor(Qt::green, var);
+			qcb->setCheckState(Qt::Checked);
 		}
 		else
 		{
-			var->setText(3, QString::fromLocal8Bit("否"));
+			QCheckBox* qcb = (QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0);
+			setItemColor(Qt::black, var);
+			qcb->setCheckState(Qt::Unchecked);
 		}
-		return 0;
 	}
 	else if (taskarray == FinishArray)
 	{
-		QTreeWidgetItem* var = getTaskItemById(task->getId(), ui.TrewFinishTasklist);
-		var->setText(1, task->getName());
-		var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
-		if (task->getRepeat())
+		var = getTaskItemById(task->getId(), ui.TrewFinishTasklist);
+		//如果任务/步骤完成
+		if (task->getIsFinish())
 		{
-			var->setText(3, QString::fromLocal8Bit("是"));
+			QCheckBox* qcb = (QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0);
+			setItemColor(Qt::green, var);
+			qcb->setCheckState(Qt::Checked);
 		}
 		else
 		{
-			var->setText(3, QString::fromLocal8Bit("否"));
+			QCheckBox* qcb = (QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0);
+			setItemColor(Qt::black, var);
+			qcb->setCheckState(Qt::Unchecked);
 		}
-		return 0;
 	}
 	else
 	{
 		return 0;
 	}
+	var->setText(1, task->getName());
+	var->setText(2, task->getDeadline().toString(QString::fromLocal8Bit("MM月dd日 hh:mm:ss")));
+	if (task->getRepeat())
+	{
+		var->setText(3, QString::fromLocal8Bit("是"));
+	}
+	else
+	{
+		var->setText(3, QString::fromLocal8Bit("否"));
+	}
+	
+	return 0;
 }
+//定时器
 int TODO::TimeOut()
 {
 	//获取当前时间
@@ -246,18 +319,19 @@ int TODO::TimeOut()
 		{
 			item = q.front();
 			q.pop_front();
-			if (datasource.getFromTodoArray(item->data(0, Qt::UserRole).toUInt())->getDeadline() < Nowtime)
+			Task* task = datasource.getFromTodoArray(item->data(0, Qt::UserRole).toUInt());
+			//在Todo中处理完成事件
+			if (task->getIsFinish())
 			{
-
-				item->setTextColor(1, Qt::red);
-				item->setTextColor(2, Qt::red);
-				item->setTextColor(3, Qt::red);
+				setItemColor(Qt::green, item);
+			}
+			else if (task->getDeadline() < Nowtime)
+			{
+				setItemColor(Qt::red, item);
 			}
 			else
 			{
-				item->setTextColor(1, Qt::black);
-				item->setTextColor(2, Qt::black);
-				item->setTextColor(3, Qt::black);
+				setItemColor(Qt::black, item);
 			}
 			son = item->child(j);
 			while (son)
@@ -265,12 +339,14 @@ int TODO::TimeOut()
 				q.push_back(son);
 				son = item->child(++j);
 			}
+			j = 0;
 		}
 		//处理下一个根节点
 		father = ui.TrewTodoTasklist->topLevelItem(++i);
 	}
 	return 0;
 }
+//双击
 int TODO::DoubleClickInwidget(QTreeWidgetItem* item)
 {
 	//获取当前选中item的id
@@ -323,10 +399,19 @@ QCheckBox* TODO::newQCheckbox(QTreeWidgetItem* item, Task* task, TaskState state
 		//任务完成颜色变化
 		item->setTextColor(1, Qt::green);
 		item->setTextColor(2, Qt::green);
+		item->setTextColor(3, Qt::green);
 		qcb->setCheckState(Qt::Checked);
 	}
+	else
+	{
+		//任务未完成颜色变化
+		item->setTextColor(1, Qt::black);
+		item->setTextColor(2, Qt::black);
+		item->setTextColor(2, Qt::black);
+		qcb->setCheckState(Qt::Unchecked);
+	}
 	//判断要插入的任务是否过期
-	else if (state == Todo)
+	if (state == Todo)
 	{
 		if (task->getDeadline() < QDateTime::currentDateTime())
 		{
@@ -336,7 +421,7 @@ QCheckBox* TODO::newQCheckbox(QTreeWidgetItem* item, Task* task, TaskState state
 		}
 	}
 	//关联复选框信号和槽
-	connect(qcb, SIGNAL(stateChanged(int)), this, SLOT(Changetaskstate(int)));
+	connect(qcb, SIGNAL(clicked(bool)), this, SLOT(Changetaskstate(bool)));
 	return qcb;
 }
 QTreeWidgetItem* TODO::getTaskItemById(int taskId, QTreeWidget* widget)
@@ -370,7 +455,7 @@ QTreeWidgetItem* TODO::getTaskItemById(int taskId, QTreeWidget* widget)
 	}
 	return NULL;
 }
-void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlace place, QTreeWidgetItem* father)
+QTreeWidgetItem* TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlace place, QTreeWidgetItem* father)
 {
 	if (place == Father)
 	{	
@@ -382,6 +467,7 @@ void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlac
 		QCheckBox* qcb = newQCheckbox(item, task, state);
 		//添加复选框
 		widget->setItemWidget(item, 0, qcb);
+		return item;
 	}
 	else if (place == Son)
 	{
@@ -390,15 +476,27 @@ void TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlac
 		//添加item
 		father->addChild(son);
 		//构造复选框
-		QCheckBox* qcb = newQCheckbox(son, task, Todo);
+		QCheckBox* qcb = newQCheckbox(son, task, state);
 		//添加复选框
 		widget->setItemWidget(son, 0, qcb);
+		return son;
+	}
+	else
+	{
+		return NULL;
 	}
 }
-int TODO::Changetaskstate(int id)
+void TODO::setItemColor(QColor color, QTreeWidgetItem* item)
+{
+	item->setTextColor(1, color);
+	item->setTextColor(2, color);
+	item->setTextColor(3, color);
+}
+//复选框
+int TODO::Changetaskstate(bool id)
 {
 	//完成任务只能在Todo中
-	if (id == 2 && !ui.TrewTodoTasklist->hasFocus())
+	if (id && ui.TrewTodoTasklist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
 	{
 		//qDebug() << QString::fromLocal8Bit("选中");
 		//获取选中item
@@ -410,17 +508,10 @@ int TODO::Changetaskstate(int id)
 		int taskId = t->data(0, Qt::UserRole).toUInt();
 		//任务完成一次
 		Task* var = datasource.TaskFinishOnce(taskId);
-		if (var->getRepeat())
-		{
-			QCheckBox* qcb = (QCheckBox*)ui.TrewTodoTasklist->itemWidget(t, 0);
-			qcb->setCheckState(Qt::Unchecked);
-		}
 	}
-	//重做任务只能在Finish中
-	else if (id == 0 && !ui.TrewFinishTasklist->hasFocus())
+	//重做任务//如果finish有焦点
+	else if (!id && ui.TrewFinishTasklist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
 	{
-		//qDebug() << QString::fromLocal8Bit("未选中");
-		//取消选中
 		QTreeWidgetItem* t = ui.TrewFinishTasklist->currentItem();
 		if (t == NULL)
 		{
@@ -428,11 +519,23 @@ int TODO::Changetaskstate(int id)
 		}
 		int taskId = t->data(0, Qt::UserRole).toUInt();
 		//修改数组数据
-		datasource.Translate(FinishArray, TodoArray, taskId);
+		datasource.TaskRedo(taskId, FinishArray);
+	}
+	//如果todo有焦点
+	else if (!id && ui.TrewTodoTasklist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+	{
+		QTreeWidgetItem* t = ui.TrewTodoTasklist->currentItem();
+		if (t == NULL)
+		{
+			return 0;
+		}
+		int taskId = t->data(0, Qt::UserRole).toUInt();
+		//修改数组数据
+		datasource.TaskRedo(taskId, TodoArray);
 	}
 	return 0;
 }
-
+//按钮
 int TODO::OnBtnAddtask()
 {
 	if (ui.LinTaskname->text().isEmpty())
