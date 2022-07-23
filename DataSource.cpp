@@ -72,6 +72,7 @@ Task* DataSource::TaskRedo(int taskId, TaskArray array)
 		var = getFromTodoArray(taskId);
 		//重做步骤步骤的所有子步骤全部重做
 		var->redoTask(TodoArray);
+		//步骤包括步骤的父节点也得重做
 		
 	}
 	else if (array == FinishArray)

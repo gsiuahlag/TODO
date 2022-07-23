@@ -87,12 +87,21 @@ void Task::pasteFromNewtask(Task* newtask)
 	//this->FatherTask = newtask->getFatherTask();
 	emit ChangeTask(TodoArray, this);
 }
-//把自己和自己的子节点全部置为未完成
+//把自己和自己的子节点全部置为未完成，自己的父节点也未完成
 void Task::redoTask(TaskArray array)
 {
 	Task* var = this;
+	//重做父节点
+	while (var->getFatherTask())
+	{
+		var->getFatherTask()->setIsFinish(false);
+		var = var->getFatherTask();
+	}
+	var = this;
+	//重做子节点
 	QQueue<Task*> q;
 	q.push_back(var);
+	
 	while (!q.isEmpty())
 	{
 		var = q.front();
@@ -112,6 +121,7 @@ void Task::redoTask(TaskArray array)
 			q.push_back(itor.next());
 		}
 	}
+
 }
 
 void Task::repeatOnce()

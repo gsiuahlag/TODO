@@ -23,6 +23,8 @@ private:
     QCheckBox* newQCheckbox(QTreeWidgetItem*, Task*, TaskState);
     QTreeWidgetItem* getTaskItemById(int taskId, QTreeWidget* widget);
     void setItemColor(QColor, QTreeWidgetItem*);
+    void setQcheckBoxState(QCheckBox* qcb, TaskState state);
+
     bool sortItem;
     QTimer* qtimer;
     DataSource datasource;

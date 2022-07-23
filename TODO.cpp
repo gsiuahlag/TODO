@@ -161,6 +161,7 @@ int TODO::AddTaskItem(TaskArray taskarray, Task* task, TaskPlace place, Task* fa
 			//插入一条Father记录，如果有儿子节点要把儿子节点插入
 			//QTreeWidgetItem* fa = insertItem(task, ui.TrewTodoTasklist, Todo);
 			//QTreeWidgetItem* fa = NULL;
+			//一个任务的规模应该不会太大
 			//遍历插入儿子,效率？遍历儿子是O（n）,插入后查找父亲也是O（n），整个复杂度为O（n^2）
 			QStack<Task*> stack;
 			Task* p;
@@ -256,15 +257,13 @@ int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 		//如果任务/步骤完成
 		if (task->getIsFinish())
 		{
-			QCheckBox* qcb = (QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0);
+			setQcheckBoxState((QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0), Finish);
 			setItemColor(Qt::green, var);
-			qcb->setCheckState(Qt::Checked);
 		}
 		else
 		{
-			QCheckBox* qcb = (QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0);
+			setQcheckBoxState((QCheckBox*)ui.TrewTodoTasklist->itemWidget(var, 0), Todo);
 			setItemColor(Qt::black, var);
-			qcb->setCheckState(Qt::Unchecked);
 		}
 	}
 	else if (taskarray == FinishArray)
@@ -273,15 +272,13 @@ int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 		//如果任务/步骤完成
 		if (task->getIsFinish())
 		{
-			QCheckBox* qcb = (QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0);
+			setQcheckBoxState((QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0), Finish);
 			setItemColor(Qt::green, var);
-			qcb->setCheckState(Qt::Checked);
 		}
 		else
 		{
-			QCheckBox* qcb = (QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0);
+			setQcheckBoxState((QCheckBox*)ui.TrewFinishTasklist->itemWidget(var, 0), Todo);
 			setItemColor(Qt::black, var);
-			qcb->setCheckState(Qt::Unchecked);
 		}
 	}
 	else
@@ -304,7 +301,7 @@ int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 //定时器
 int TODO::TimeOut()
 {
-	//获取当前时间
+	//获取当前时间,检测任务状态和超时
 	QDateTime Nowtime = QDateTime::currentDateTime();
 	ui.DteNow->setDateTime(Nowtime);
 	int i = 0, j = 0;
@@ -323,14 +320,17 @@ int TODO::TimeOut()
 			//在Todo中处理完成事件
 			if (task->getIsFinish())
 			{
+				setQcheckBoxState((QCheckBox*)ui.TrewTodoTasklist->itemWidget(item, 0), Finish);
 				setItemColor(Qt::green, item);
 			}
 			else if (task->getDeadline() < Nowtime)
 			{
+				setQcheckBoxState((QCheckBox*)ui.TrewTodoTasklist->itemWidget(item, 0), Todo);
 				setItemColor(Qt::red, item);
 			}
 			else
 			{
+				setQcheckBoxState((QCheckBox*)ui.TrewTodoTasklist->itemWidget(item, 0), Todo);
 				setItemColor(Qt::black, item);
 			}
 			son = item->child(j);
@@ -492,6 +492,14 @@ void TODO::setItemColor(QColor color, QTreeWidgetItem* item)
 	item->setTextColor(2, color);
 	item->setTextColor(3, color);
 }
+void TODO::setQcheckBoxState(QCheckBox* qcb, TaskState state)
+{
+	if (state == Finish)
+		qcb->setCheckState(Qt::Checked);
+	else
+		qcb->setCheckState(Qt::Unchecked);
+}
+
 //复选框
 int TODO::Changetaskstate(bool id)
 {
