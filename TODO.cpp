@@ -19,6 +19,7 @@ TODO::TODO(QWidget* parent)
 	//默认展示当前时间
 	ui.DteTaskdeadline->setDateTime(QDateTime::currentDateTime());
 	ui.DteNow->setDateTime(QDateTime::currentDateTime());
+	ui.DteDaily->setDate(QDate::currentDate());
 	//修改表头宽度
 	ui.TrewTodoTasklist->setColumnWidth(0, 40);
 	ui.TrewTodoTasklist->setColumnWidth(1, 60);
@@ -26,7 +27,6 @@ TODO::TODO(QWidget* parent)
 	ui.TrewFinishTasklist->setColumnWidth(0, 40);
 	ui.TrewFinishTasklist->setColumnWidth(1, 60);
 	ui.TrewFinishTasklist->setColumnWidth(2, 120);
-	//tasklistmodel = ui.TrewTodoTasklist->model();
 
 	//设置字体数据
 	// 
@@ -34,32 +34,17 @@ TODO::TODO(QWidget* parent)
 	taskDelete = new QAction(QString::fromLocal8Bit("删除任务"));
 	taskUpdate = new QAction(QString::fromLocal8Bit("更新任务"));
 	taskNewChild = new QAction(QString::fromLocal8Bit("新建步骤"));
+	taskToplan = new QAction(QString::fromLocal8Bit("添加到每日计划"));
+	planDelete = new QAction(QString::fromLocal8Bit("删除计划"));
 
-	//插入数据方便测试
-
-	Task* task = new Task("test1", QDateTime::currentDateTime(), NULL, true, 10, Hour);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
-	datasource.AddTodoArray(task);
-	insertItem(task, ui.TrewTodoTasklist, Todo);
-
-	task = new Task("test2", QDateTime::currentDateTime().addSecs(10), NULL, false);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
-	datasource.AddTodoArray(task);
-	insertItem(task, ui.TrewTodoTasklist, Todo);
-
-	task = new Task("test3", QDateTime::currentDateTime().addSecs(15), NULL, true, 5, Day);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
-	datasource.AddTodoArray(task);
-	insertItem(task, ui.TrewTodoTasklist, Todo);
-
-	task = new Task("test4", QDateTime::currentDateTime().addSecs(20), NULL, true, 4,Week);
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
-	datasource.AddTodoArray(task);
-	insertItem(task, ui.TrewTodoTasklist, Todo);
-
+	//初始化menu
+	rightMenu = new QMenu();
 	qtimer = new QTimer(this);
 	qtimer->start(1000);
-
+	//每日计划
+	connect(ui.DteDaily, SIGNAL(dateChanged(QDate)), this, SLOT(DailyChange(QDate)));
+	//按钮
+	connect(ui.BtnAddplan, SIGNAL(clicked()), this, SLOT(OnBtnAddplan()));
 	connect(ui.BtnAddtask, SIGNAL(clicked()), this, SLOT(OnBtnAddtask()));
 	connect(ui.BtnDeltask, SIGNAL(clicked()), this, SLOT(OnBtnDeltask()));
 	connect(ui.BtnSorttask, SIGNAL(clicked()), this, SLOT(OnBtnSorttask()));
@@ -71,15 +56,55 @@ TODO::TODO(QWidget* parent)
 	connect(&datasource, SIGNAL(AddTask(TaskArray, Task*, TaskPlace, Task*)), this, SLOT(AddTaskItem(TaskArray, Task*, TaskPlace, Task*)));
 	connect(&datasource, SIGNAL(DeleteTask(TaskArray, Task*)), this, SLOT(DeleteTaskItem(TaskArray, Task*)));
 	connect(&datasource, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
+	connect(&datasource, SIGNAL(AddPlan(Plan*)), this, SLOT(AddPlanItem(Plan*)));
+	connect(&datasource, SIGNAL(DeletePlan(Plan*, bool)), this, SLOT(DeletePlanItem(Plan*, bool)));
+	connect(&datasource, SIGNAL(ChangePlan(Plan*)), this, SLOT(ChangePlanItem(Plan*)));
+
 	//右键菜单
+	connect(ui.MyDailyPlanlist, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(RightClickedInDaily(QTreeWidgetItem*)));
 	connect(ui.TrewTodoTasklist, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(RightClickedInTodo(QTreeWidgetItem*)));
 	connect(ui.TrewFinishTasklist, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(RightClickedInFinish(QTreeWidgetItem*)));
 	connect(taskDelete, SIGNAL(triggered()), this, SLOT(DeleteTask()));
 	connect(taskUpdate, SIGNAL(triggered()), this, SLOT(UpdateTask()));
 	connect(taskNewChild, SIGNAL(triggered()), this, SLOT(NewChildTask()));
+	connect(taskToplan, SIGNAL(triggered()), this, SLOT(TaskToPlan()));
+	connect(planDelete, SIGNAL(triggered()), this, SLOT(DeletePlan()));
 
+	//从服务器获取Task数据
+	datasource.getTaskData();
+	//从服务器获取Plan数据
+	datasource.getDailyDataFromServer(ui.DteDaily->date());
 }
+//每日计划
+int TODO::DailyChange(QDate date)
+{
+	datasource.setdailyDate(date);
+	return 0;
+}
+
 //右键菜单和事件处理
+int TODO::TaskToPlan()
+{
+	//存在最高父级，则任何子级都不能添加
+	Task* task = datasource.getFromTodoArray(taskToplan->data().toInt());
+	//重复添加、先父级再子级、先子级再父级
+	if (task->getInPlan() || datasource.ifTopTaskInDailyArray(datasource.GetTaskTopFather(task)->getId()))
+	{
+		QMessageBox::warning(this, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("任务已在计划中"));
+		return 0;
+	}
+	//先子级再父级,检查一下计划中有没有自己的孩子，如果有则将孩子移除
+
+	task->setInPlan(true);
+	Plan* plan = new Plan(task);
+	datasource.AddDailyArray(plan);
+	return 0;
+}
+int TODO::DeletePlan()
+{
+	datasource.deletePlan(planDelete->data().toInt());
+	return 0;
+}
 int TODO::DeleteTask()
 {
 	//尝试在两个地方删除数据
@@ -115,8 +140,7 @@ int TODO::NewChildTask()
 	int ret = addtaskchild.exec();
 	if (ret == QDialog::Accepted)
 	{
-		//关联task的更新
-		connect(addtaskchild.Newprocedure, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
+		//加入产生的Task
 		datasource.AddTodoArray(addtaskchild.Newprocedure, Son, var);
 	}
 
@@ -127,14 +151,18 @@ int TODO::RightClickedInTodo(QTreeWidgetItem* item)
 	//判断是否为右键
 	if (qApp->mouseButtons() == Qt::RightButton)  
 	{
+		//先把之前的释放
+		delete rightMenu;
 		rightMenu = new QMenu(ui.TrewTodoTasklist);
 		//把数据传递给选项
 		taskDelete->setData(item->data(0, Qt::UserRole));
 		taskUpdate->setData(item->data(0, Qt::UserRole));
 		taskNewChild->setData(item->data(0, Qt::UserRole));
+		taskToplan->setData(item->data(0, Qt::UserRole));
 		rightMenu->addAction(taskDelete);
 		rightMenu->addAction(taskUpdate);
 		rightMenu->addAction(taskNewChild);
+		rightMenu->addAction(taskToplan);
 		rightMenu->exec(QCursor::pos());   //菜单弹出位置为鼠标点击位置
 	}
 	return 0;
@@ -144,9 +172,25 @@ int TODO::RightClickedInFinish(QTreeWidgetItem* item)
 	//判断是否为右键
 	if (qApp->mouseButtons() == Qt::RightButton)
 	{
+		//先把之前的释放
+		delete rightMenu;
 		rightMenu = new QMenu(ui.TrewFinishTasklist);
 		taskDelete->setData(item->data(0, Qt::UserRole));
 		rightMenu->addAction(taskDelete);
+		rightMenu->exec(QCursor::pos());   //菜单弹出位置为鼠标点击位置
+	}
+	return 0;
+}
+int TODO::RightClickedInDaily(QTreeWidgetItem* item)
+{
+	//判断是否为右键
+	if (qApp->mouseButtons() == Qt::RightButton)
+	{
+		//先把之前的释放
+		delete rightMenu;
+		rightMenu = new QMenu(ui.MyDailyPlanlist);
+		planDelete->setData(item->data(0, Qt::UserRole));
+		rightMenu->addAction(planDelete);
 		rightMenu->exec(QCursor::pos());   //菜单弹出位置为鼠标点击位置
 	}
 	return 0;
@@ -298,6 +342,56 @@ int TODO::ChangeTaskItem(TaskArray taskarray, Task* task)
 	
 	return 0;
 }
+int TODO::AddPlanItem(Plan* plan)
+{
+	//新建item并设置数据
+	QTreeWidgetItem* item = new QTreeWidgetItem();
+	item->setData(0, Qt::UserRole, plan->getId());
+	item->setText(1, plan->getName());
+	item->setText(2, plan->getTodotime().toString(QString::fromLocal8Bit("hh:mm")));
+	//添加item
+	ui.MyDailyPlanlist->addTopLevelItem(item);
+	//生成复选框
+	QCheckBox* qcb = new QCheckBox();
+	connect(qcb, SIGNAL(clicked(bool)), this, SLOT(Changetaskstate(bool)));
+	//添加复选框
+	ui.MyDailyPlanlist->setItemWidget(item, 0, qcb);
+	return 0;
+}
+int TODO::DeletePlanItem(Plan* plan, bool all)
+{
+	if (all)
+	{
+		QTreeWidgetItem* var = NULL;
+		int count = ui.MyDailyPlanlist->topLevelItemCount();
+		for (int i = 0; i < count; i++)
+		{
+			//删除一个以后索引会变
+			var = ui.MyDailyPlanlist->topLevelItem(0);
+			delete var;
+		}
+	}
+	else
+	{
+		QTreeWidgetItem* var = getPlanItemById(plan->getId());
+		delete var;
+	}
+	return 0;
+}
+int TODO::ChangePlanItem(Plan* plan)
+{
+	QTreeWidgetItem* var = getPlanItemById(plan->getId());
+	if (plan->isFinish())
+	{
+		setItemColor(Qt::green, var);
+	}
+	else
+	{
+		setItemColor(Qt::black, var);
+	}
+	return 0;
+}
+	
 //定时器
 int TODO::TimeOut()
 {
@@ -455,6 +549,21 @@ QTreeWidgetItem* TODO::getTaskItemById(int taskId, QTreeWidget* widget)
 	}
 	return NULL;
 }
+QTreeWidgetItem* TODO::getPlanItemById(int planId)
+{
+	//plan的增删改
+	int Counts = ui.MyDailyPlanlist->topLevelItemCount();
+	QTreeWidgetItem* var = ui.MyDailyPlanlist->topLevelItem(0);
+	for (int i = 0; i < Counts; i++)
+	{
+		if (var->data(0, Qt::UserRole).toInt() == planId)
+		{
+			return var;
+		}
+		var = ui.MyDailyPlanlist->itemBelow(var);
+	}
+	return NULL;
+}
 QTreeWidgetItem* TODO::insertItem(Task* task, QTreeWidget* widget, TaskState state, TaskPlace place, QTreeWidgetItem* father)
 {
 	if (place == Father)
@@ -499,7 +608,6 @@ void TODO::setQcheckBoxState(QCheckBox* qcb, TaskState state)
 	else
 		qcb->setCheckState(Qt::Unchecked);
 }
-
 //复选框
 int TODO::Changetaskstate(bool id)
 {
@@ -515,7 +623,7 @@ int TODO::Changetaskstate(bool id)
 		}
 		int taskId = t->data(0, Qt::UserRole).toUInt();
 		//任务完成一次
-		Task* var = datasource.TaskFinishOnce(taskId);
+		datasource.TaskFinishOnce(taskId);
 	}
 	//重做任务//如果finish有焦点
 	else if (!id && ui.TrewFinishTasklist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
@@ -541,22 +649,56 @@ int TODO::Changetaskstate(bool id)
 		//修改数组数据
 		datasource.TaskRedo(taskId, TodoArray);
 	}
+	else if (id && ui.MyDailyPlanlist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+	{
+		QTreeWidgetItem* t = ui.MyDailyPlanlist->currentItem();
+		if (t == NULL)
+		{
+			return 0;
+		}
+		int planId = t->data(0, Qt::UserRole).toUInt();
+		datasource.finishPlan(planId);
+	}
+	else if (!id && ui.MyDailyPlanlist->geometry().contains(this->mapFromGlobal(QCursor::pos())))
+	{
+		QTreeWidgetItem* t = ui.MyDailyPlanlist->currentItem();
+		if (t == NULL)
+		{
+			return 0;
+		}
+		int planId = t->data(0, Qt::UserRole).toUInt();
+		datasource.PlanRedo(planId);
+	}
 	return 0;
 }
 //按钮
+int TODO::OnBtnAddplan()
+{
+	if (ui.LinTaskname->text().isEmpty())
+	{
+		QMessageBox::warning(this, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("计划名不能为空"));
+		return 0;
+	}
+	//构造task对象
+	Plan* plan = new Plan(ui.LinTaskname->text(), ui.DteTaskdeadline->time());
+	//加入数据源,界面会由信号机制自动刷新
+	datasource.AddDailyArray(plan);
+	//文本框置空
+	ui.LinTaskname->setText("");
+	//QMessageBox::information(this, QString::fromLocal8Bit("成功"), QString::fromLocal8Bit("插入成功"));
+	return 0;
+}
 int TODO::OnBtnAddtask()
 {
 	if (ui.LinTaskname->text().isEmpty())
 	{
 		QMessageBox::warning(this, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("任务名不能为空"));
-		return 0;
+		return 0; 
 	}
 	//构造task对象
 	Task* task = new Task(ui.LinTaskname->text(), ui.DteTaskdeadline->dateTime());
-	//加入数据源
+	//加入数据源,界面会由信号机制自动刷新
 	datasource.AddTodoArray(task);
-	//关联信号
-	connect(task, SIGNAL(ChangeTask(TaskArray, Task*)), this, SLOT(ChangeTaskItem(TaskArray, Task*)));
 	//文本框置空
 	ui.LinTaskname->setText("");
 	//QMessageBox::information(this, QString::fromLocal8Bit("成功"), QString::fromLocal8Bit("插入成功"));
