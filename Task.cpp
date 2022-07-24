@@ -10,24 +10,16 @@ Task::Task()
 	this->Repeat = false;
 	this->RepeatTime.Length = 0;
 	this->RepeatTime.Unit = Year;
-	this->procedureTask = new QList<Task*>();
+	this->procedureTask = new QList<Task *>();
 	this->FatherTask = NULL;
 	this->IsFinish = false;
-	this->InPlan = false;
 }
 Task::~Task()
 {
 	qDebug() << Name << QString::fromLocal8Bit("被销毁");
 	delete procedureTask;
 }
-bool Task::getInPlan()
-{
-	return InPlan;
-}
-void Task::setInPlan(bool inplan)
-{
-	this->InPlan = inplan;
-}
+
 QString Task::getName()
 {
 	return Name;
@@ -90,7 +82,6 @@ void Task::pasteFromNewtask(Task* newtask)
 	this->Repeat = newtask->getRepeat();
 	this->RepeatTime = newtask->getRepeatTime();
 	this->IsFinish = newtask->getIsFinish();
-	this->InPlan = newtask->getInPlan();
 	//修改不涉及任务和步骤之间的关系，子节点列表指针和父节点指针 浅拷贝
 	//this->procedureTask = newtask->getprocedureTask();
 	//this->FatherTask = newtask->getFatherTask();
@@ -116,15 +107,23 @@ void Task::redoTask(TaskArray array)
 		var = q.front();
 		q.pop_front();
 		var->setIsFinish(false);
-		//发信号
-		emit ChangeTask(array, var);
+		if (array == TodoArray)
+		{
+			emit ChangeTask(TodoArray, var);
+		}
+		else if (array == FinishArray)
+		{
+			emit ChangeTask(FinishArray, var);
+		}
 		QListIterator<Task*> itor(*var->getprocedureTask());
 		for (itor.toFront(); itor.hasNext();)
 		{
 			q.push_back(itor.next());
 		}
 	}
+
 }
+
 void Task::repeatOnce()
 {
 	int length = this->getRepeatTime().Length;

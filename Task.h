@@ -29,7 +29,7 @@ public:
 		int Unit;
 	};
 	Task();
-	Task::Task(QString name, QDateTime deadline, Task* fathertask = NULL, bool repeat = false, int length = 0, MyUnit unit = Year, bool inplan = false, QList<Task*>* proceduretask = new QList<Task*>())
+	Task::Task(QString name, QDateTime deadline, Task* fathertask = NULL, bool repeat = false, int length = 0, MyUnit unit = Year, QList<Task*>* proceduretask = new QList<Task*>())
 	{
 		this->Id = ++taskNumber;
 		this->Name = name;
@@ -40,7 +40,6 @@ public:
 		this->procedureTask = proceduretask;
 		this->FatherTask = fathertask;
 		this->IsFinish = false;
-		this->InPlan = false;
 	}
 	~Task();
 	//getter and setter
@@ -65,8 +64,6 @@ public:
 	void setFatherTask(Task* fathertask);
 	bool getIsFinish();
 	void setIsFinish(bool isfinish);
-	bool getInPlan();
-	void setInPlan(bool inplan);
 	
 	//产生一个新的task副本，返回指针
 	static Task* Task::copyFromOldtask(Task* oldtask)
@@ -77,7 +74,6 @@ public:
 		newtask->setRepeat(oldtask->getRepeat());
 		newtask->setRepeatTime(oldtask->getRepeatTime());
 		newtask->setIsFinish(oldtask->getIsFinish());
-		newtask->setInPlan(oldtask->getInPlan());
 		//修改不涉及任务和步骤之间的关系，子节点列表指针和父节点指针 浅拷贝
 		//现阶段的拷贝仅仅进行任务数据修改，父节点数据可以不改
 		//newtask->setprocedureTask(oldtask->getprocedureTask());
@@ -87,7 +83,6 @@ public:
 	//利用新的task作为自己的值
 	void pasteFromNewtask(Task* newtask);
 	void repeatOnce();
-	void redoOnce();
 	void redoTask(TaskArray);
 	static int taskNumber;
 
@@ -98,7 +93,6 @@ private:
 	QString Name;
 	QDateTime Deadline;
 	bool Repeat;
-	bool InPlan;
 	MyTime RepeatTime;
 	QList <Task* > *procedureTask;
 	Task* FatherTask;

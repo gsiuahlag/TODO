@@ -1,6 +1,4 @@
-#ifndef TODO_H 
-#define TODO_H
-
+#pragma once
 
 #include <QtWidgets/QMainWindow>
 #include "ui_TODO.h"
@@ -10,6 +8,7 @@
 #include "DataSource.h"
 #include <QCheckBox>
 #include <QStack>
+#include "SetQCheckBox.h"
 
 class TODO : public QMainWindow
 {
@@ -23,27 +22,21 @@ private:
     QTreeWidgetItem* newItem(int, Task* = NULL);
     QCheckBox* newQCheckbox(QTreeWidgetItem*, Task*, TaskState);
     QTreeWidgetItem* getTaskItemById(int taskId, QTreeWidget* widget);
-    QTreeWidgetItem* getPlanItemById(int planId);
     void setItemColor(QColor, QTreeWidgetItem*);
     void setQcheckBoxState(QCheckBox* qcb, TaskState state);
+
     bool sortItem;
     QTimer* qtimer;
     DataSource datasource;
-
+    const QFont taskTimeout;
+    const QFont taskFinish;
+    const QFont taskTodo;
     QMenu* rightMenu;
     QAction* taskDelete;
     QAction* taskUpdate;
     QAction* taskNewChild;
-    QAction* taskToplan;
-    QAction* planDelete;
 public slots:
-    //每日计划
-    int DailyChange(QDate);
-    int AddPlanItem(Plan*);
-    int DeletePlanItem(Plan*, bool);
-    int ChangePlanItem(Plan*);
     //按钮
-	int OnBtnAddplan();
     int OnBtnAddtask();
     int OnBtnDeltask();
     int OnBtnSorttask();
@@ -60,15 +53,11 @@ public slots:
     //右键
     int RightClickedInTodo(QTreeWidgetItem*);
 	int RightClickedInFinish(QTreeWidgetItem*);
-    int RightClickedInDaily(QTreeWidgetItem*);
     //右键菜单
     int DeleteTask();
     int UpdateTask();
     int NewChildTask();
-    int TaskToPlan();
-    int DeletePlan();
 private:
    // QAbstractItemModel* tasklistmodel;
     Ui::TODOClass ui;
 };
-#endif // 

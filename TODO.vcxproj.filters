@@ -61,7 +61,7 @@
     <ClCompile Include="AddTaskChild.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plan.cpp">
+    <ClCompile Include="SetQCheckBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,6 +75,9 @@
     <ClInclude Include="AfThread.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="SetQCheckBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ChangeTaskInfomation.h">
@@ -87,9 +90,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="AddTaskChild.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Plan.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
