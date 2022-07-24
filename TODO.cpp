@@ -79,7 +79,7 @@ TODO::TODO(QWidget* parent)
 int TODO::DailyChange(QDate date)
 {
 	datasource.setdailyDate(date);
-	return 0;
+	return 0; 
 }
 
 //右键菜单和事件处理
