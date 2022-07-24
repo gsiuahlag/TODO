@@ -15,6 +15,7 @@ public:
 public slots:
 	void OnBtnOk();
 	void OnBtnCancel();
+	void StateChange();
 private:
 private:
 	Ui::ChangeTaskInfomationClass ui;

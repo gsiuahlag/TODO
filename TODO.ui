@@ -6,346 +6,255 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1176</width>
-    <height>620</height>
+    <width>937</width>
+    <height>557</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TODO</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>204</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="BtnAddtask">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0" rowspan="3" colspan="2">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="BtnAddtask">
+          <property name="text">
+           <string>添加任务</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="BtnAddplan">
+          <property name="text">
+           <string>添加计划</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="BtnSorttask">
+          <property name="text">
+           <string>排序任务</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>任务名称</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="LinTaskname"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>任务截至时间</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateTimeEdit" name="DteTaskdeadline">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+          <property name="currentSectionIndex">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>每日计划</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateEdit" name="DteDaily">
+            <property name="minimumDate">
+             <date>
+              <year>2022</year>
+              <month>7</month>
+              <day>14</day>
+             </date>
+            </property>
+            <property name="displayFormat">
+             <string>yyyy年M月d日</string>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTreeWidget" name="MyDailyPlanlist">
+          <column>
+           <property name="text">
+            <string>完成</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>任务名称</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="QLabel" name="LabSorttips">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3" rowspan="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>当前时间</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateTimeEdit" name="DteNow">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="frame">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+        <property name="displayFormat">
+         <string>yyyy/M/d H:mm:ss</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="2">
+     <widget class="QTreeWidget" name="TrewTodoTasklist">
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>400</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <attribute name="headerVisible">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="headerCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerMinimumSectionSize">
+       <number>10</number>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>75</number>
+      </attribute>
+      <attribute name="headerHighlightSections">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerShowSortIndicator" stdset="0">
+       <bool>false</bool>
+      </attribute>
+      <column>
        <property name="text">
-        <string>添加任务</string>
+        <string>完成</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="BtnSorttask">
-       <property name="text">
-        <string>排序任务</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>90</y>
-      <width>206</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>任务截至时间</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDateTimeEdit" name="DteTaskdeadline">
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-       <property name="currentSectionIndex">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>189</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="label">
+      </column>
+      <column>
        <property name="text">
         <string>任务名称</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="LinTaskname"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>1020</x>
-      <y>530</y>
-      <width>123</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="BtnDeltask">
+      </column>
+      <column>
        <property name="text">
-        <string>删除任务</string>
+        <string>截止时间</string>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QLabel" name="LabSorttips">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>60</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>780</x>
-      <y>20</y>
-      <width>48</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>当前时间</string>
-    </property>
-   </widget>
-   <widget class="QDateTimeEdit" name="DteNow">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>20</y>
-      <width>120</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="wrapping">
-     <bool>false</bool>
-    </property>
-    <property name="frame">
-     <bool>true</bool>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-    <property name="buttonSymbols">
-     <enum>QAbstractSpinBox::NoButtons</enum>
-    </property>
-    <property name="displayFormat">
-     <string>yyyy/M/d H:mm:ss</string>
-    </property>
-    <property name="calendarPopup">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QTreeWidget" name="TrewTodoTasklist">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>60</y>
-      <width>361</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <attribute name="headerVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="headerCascadingSectionResizes">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="headerMinimumSectionSize">
-     <number>10</number>
-    </attribute>
-    <attribute name="headerDefaultSectionSize">
-     <number>75</number>
-    </attribute>
-    <attribute name="headerHighlightSections">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="headerShowSortIndicator" stdset="0">
-     <bool>false</bool>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>完成</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>任务名称</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>截止时间</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>循环</string>
-     </property>
-    </column>
-   </widget>
-   <widget class="QTreeWidget" name="TrewFinishTasklist">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>60</y>
-      <width>321</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>99999</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <attribute name="headerDefaultSectionSize">
-     <number>80</number>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>完成</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>任务名称</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>截止时间</string>
-     </property>
-    </column>
-   </widget>
-   <widget class="QPushButton" name="BtnAddplan">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>370</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>添加计划</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>140</y>
-      <width>241</width>
-      <height>381</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>每日计划</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateEdit" name="DteDaily">
-         <property name="minimumDate">
-          <date>
-           <year>2022</year>
-           <month>7</month>
-           <day>14</day>
-          </date>
-         </property>
-         <property name="displayFormat">
-          <string>yyyy年M月d日</string>
-         </property>
-         <property name="calendarPopup">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QTreeWidget" name="MyDailyPlanlist">
-       <column>
-        <property name="text">
-         <string>完成</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>任务名称</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+      </column>
+      <column>
+       <property name="text">
+        <string>循环</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QTreeWidget" name="TrewFinishTasklist">
+      <property name="maximumSize">
+       <size>
+        <width>99999</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <attribute name="headerDefaultSectionSize">
+       <number>80</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>完成</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任务名称</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>截止时间</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1176</width>
+     <width>937</width>
      <height>23</height>
     </rect>
    </property>

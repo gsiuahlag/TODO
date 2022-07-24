@@ -6,156 +6,116 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>220</width>
-    <height>177</height>
+    <width>223</width>
+    <height>147</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ChangeTaskInfomation</string>
   </property>
-  <widget class="QCheckBox" name="Repeat">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>81</y>
-     <width>71</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>是否循环</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>9</y>
-     <width>189</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>任务名称</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="Name"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>45</y>
-     <width>182</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>截止时间</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QDateTimeEdit" name="Deadline">
-      <property name="calendarPopup">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>103</y>
-     <width>154</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>循环时间</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QSpinBox" name="Length"/>
-    </item>
-    <item>
-     <widget class="QComboBox" name="Unit">
-      <item>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>年</string>
+        <string>任务名称</string>
        </property>
-      </item>
-      <item>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="Name"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>月</string>
+        <string>截止时间</string>
        </property>
-      </item>
-      <item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDateTimeEdit" name="Deadline">
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="Repeat">
+     <property name="text">
+      <string>是否循环</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>周</string>
+        <string>循环时间</string>
        </property>
-      </item>
-      <item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="Length"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="Unit">
+       <item>
+        <property name="text">
+         <string>年</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>月</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>周</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>日</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>小时</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QPushButton" name="BtnOk">
        <property name="text">
-        <string>日</string>
+        <string>确定</string>
        </property>
-      </item>
-      <item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="BtnCancel">
        <property name="text">
-        <string>小时</string>
+        <string>取消</string>
        </property>
-      </item>
-      <item>
-       <property name="text">
-        <string/>
-       </property>
-      </item>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>138</y>
-     <width>158</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_5">
-    <item>
-     <widget class="QPushButton" name="BtnOk">
-      <property name="text">
-       <string>确定</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="BtnCancel">
-      <property name="text">
-       <string>取消</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

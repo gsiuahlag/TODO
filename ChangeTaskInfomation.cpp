@@ -9,6 +9,12 @@ ChangeTaskInfomation::ChangeTaskInfomation(Task* task, QWidget* parent)
 	//显示原有信息
 	ui.Name->setText(Ttask->getName());
 	ui.Deadline->setDateTime(Ttask->getDeadline());
+	//如果没有父亲节点的截止时间限制最大时间不能超过1年
+	ui.Deadline->setMaximumDate(QDate::currentDate().addDays(365));
+	//最大时间不能超过父亲的截止时间,最小时间不能超过当天
+	if (task->getFatherTask() != NULL)
+		ui.Deadline->setMaximumDateTime(task->getFatherTask()->getDeadline());
+	ui.Deadline->setMinimumDateTime(QDateTime::currentDateTime());
 	if (Ttask->getRepeat() == true)
 	{
 		ui.Repeat->setCheckState(Qt::Checked);
@@ -35,14 +41,27 @@ ChangeTaskInfomation::ChangeTaskInfomation(Task* task, QWidget* parent)
 	case Hour:
 		ui.Unit->setCurrentIndex(4);
 		break;
-	default:
+	default: 
 		ui.Unit->setCurrentIndex(4);
 		break;
 	}
 	connect(ui.BtnOk, SIGNAL(clicked()), this, SLOT(OnBtnOk()));
 	connect(ui.BtnCancel, SIGNAL(clicked()), this, SLOT(OnBtnCancel()));
+	connect(ui.Repeat, SIGNAL(clicked(bool)), this, SLOT(StateChange()));
 }
-
+void ChangeTaskInfomation::StateChange()
+{
+	if (ui.Repeat->checkState()==Qt::Unchecked)
+	{
+		ui.Unit->setDisabled(true);
+		ui.Length->setDisabled(true);
+	}
+	else
+	{
+		ui.Unit->setDisabled(false);
+		ui.Length->setDisabled(false);
+	}
+}
 void ChangeTaskInfomation::OnBtnOk()
 {
 	//获取修改后的信息，赋值给自己的task

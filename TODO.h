@@ -34,7 +34,6 @@ private:
     QAction* taskDelete;
     QAction* taskUpdate;
     QAction* taskNewChild;
-    QAction* taskToplan;
     QAction* planDelete;
 public slots:
     //每日计划
@@ -45,7 +44,6 @@ public slots:
     //按钮
 	int OnBtnAddplan();
     int OnBtnAddtask();
-    int OnBtnDeltask();
     int OnBtnSorttask();
     //复选框
     int Changetaskstate(bool);
@@ -65,7 +63,6 @@ public slots:
     int DeleteTask();
     int UpdateTask();
     int NewChildTask();
-    int TaskToPlan();
     int DeletePlan();
 private:
    // QAbstractItemModel* tasklistmodel;

@@ -212,32 +212,9 @@ Task* DataSource::TaskRedo(int taskId, TaskArray array)
 }
 Plan* DataSource::PlanRedo(int planId)
 {
-
 	Plan* plan = getFromDailyArray(planId);
 	plan->setFinish(false);
 	emit ChangePlan(plan);
-	if (plan->gettaskId() != 0)
-	{
-		Task* task = getFromArray(plan->gettaskId());
-		//如果是重复任务,不会是重复任务
-		if (task->getRepeat() == true)
-		{
-			qDebug() << QString::fromLocal8Bit("出现bug，在重复任务重做计划");
-
-		}
-		//如果是总任务,且不重复，重做的时候任务在finish中
-		else if (task->getFatherTask() == NULL)
-		{
-			TaskRedo(plan->gettaskId(), FinishArray);
-		}
-		else
-		{
-			TaskRedo(plan->gettaskId(), TodoArray);
-		}
-		//如果是步骤，重做的时候一定还在todo中
-	}
-	return plan;
-
 	return NULL;
 }
 bool DataSource::ifTopTaskInDailyArray(int taskId)
@@ -258,19 +235,19 @@ void DataSource::getTaskData()
 	std::list<Task* > todo;
 	std::list<Task* > finish;
 	//临时数据
-	Task* task = new Task("a1", QDateTime::currentDateTime(), NULL, false);
+	Task* task = new Task("a1", QDateTime::currentDateTime().addDays(10), NULL, false);
 	todo.push_back(task);
-	Task* task2 = new Task("a1.2", QDateTime::currentDateTime(), task, false);
-	Task* task3 = new Task("a1.3", QDateTime::currentDateTime(), task, false);
+	Task* task2 = new Task("a1.2", QDateTime::currentDateTime().addDays(8), task, false);
+	Task* task3 = new Task("a1.3", QDateTime::currentDateTime().addDays(7), task, false);
 	task->getprocedureTask()->push_back(new Task("a1.1", QDateTime::currentDateTime(), task, false));
 	task->getprocedureTask()->push_back(task2);
 	task->getprocedureTask()->push_back(task3);
-	task2->getprocedureTask()->push_back(new Task("a1.2.1", QDateTime::currentDateTime(), task2, false));
-	task2->getprocedureTask()->push_back(new Task("a1.2.2", QDateTime::currentDateTime(), task2, false));
-	task3->getprocedureTask()->push_back(new Task("a1.3.1", QDateTime::currentDateTime(), task3, false));
-	task = new Task("test1", QDateTime::currentDateTime(), NULL, true, 10, Hour);
+	task2->getprocedureTask()->push_back(new Task("a1.2.1", QDateTime::currentDateTime().addDays(5), task2, false));
+	task2->getprocedureTask()->push_back(new Task("a1.2.2", QDateTime::currentDateTime().addDays(4), task2, false));
+	task3->getprocedureTask()->push_back(new Task("a1.3.1", QDateTime::currentDateTime().addDays(3), task3, false));
+	task = new Task("test1", QDateTime::currentDateTime().addSecs(50), NULL, true, 10, Hour);
 	todo.push_back(task);
-	task = new Task("test2", QDateTime::currentDateTime().addSecs(10), NULL, false);
+	task = new Task("test2", QDateTime::currentDateTime().addSecs(30), NULL, false);
 	todo.push_back(task);
 	task = new Task("test3", QDateTime::currentDateTime().addSecs(15), NULL, true, 5, Day);
 	todo.push_back(task);
@@ -445,17 +422,6 @@ void DataSource::finishPlan(int planId)
 	Plan* plan = getFromDailyArray(planId);
 	plan->setFinish(true);
 	emit ChangePlan(plan);
-	//如果计划是由任务转换来的，则计划完成任务也完成
-	if (plan->gettaskId() != 0)
-	{
-		Task* task = getFromTodoArray(plan->gettaskId());
-		TaskFinishOnce(task);
-		//如果任务是重复的，计划完成后删除，任务完成一次
-		if (task->getRepeat())
-		{
-			deletePlan(planId);
-		}
-	}
 }
 void DataSource::AddDailyArray(Plan* plan)
 {
@@ -502,12 +468,6 @@ void DataSource::AddFinishArray(Task* task, TaskPlace place, Task* father)
 void DataSource::deletePlan(int planId)
 {
 	Plan* plan = getFromDailyArray(planId);
-	//如果计划删除，则把任务在'计划中'取消
-	if (plan->gettaskId() != 0)
-	{
-		Task* task = getFromArray(plan->gettaskId());
-		task->setInPlan(false);
-	}
 	this->planDailyArray.remove(plan);
 	emit DeletePlan(plan);
 	delete plan;
