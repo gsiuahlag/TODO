@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>845</width>
-    <height>484</height>
+    <width>1176</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>90</y>
       <width>206</width>
       <height>22</height>
      </rect>
@@ -86,7 +86,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>100</y>
+      <y>60</y>
       <width>189</width>
       <height>22</height>
      </rect>
@@ -107,8 +107,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>400</y>
+      <x>1020</x>
+      <y>530</y>
       <width>123</width>
       <height>25</height>
      </rect>
@@ -152,8 +152,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>431</x>
-      <y>11</y>
+      <x>780</x>
+      <y>20</y>
       <width>48</width>
       <height>16</height>
      </rect>
@@ -165,7 +165,7 @@
    <widget class="QDateTimeEdit" name="DteNow">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>850</x>
       <y>20</y>
       <width>120</width>
       <height>20</height>
@@ -193,10 +193,10 @@
    <widget class="QTreeWidget" name="TrewTodoTasklist">
     <property name="geometry">
      <rect>
-      <x>231</x>
-      <y>61</y>
-      <width>351</width>
-      <height>331</height>
+      <x>450</x>
+      <y>60</y>
+      <width>361</width>
+      <height>461</height>
      </rect>
     </property>
     <attribute name="headerVisible">
@@ -241,15 +241,15 @@
    <widget class="QTreeWidget" name="TrewFinishTasklist">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>61</y>
-      <width>220</width>
-      <height>329</height>
+      <x>830</x>
+      <y>60</y>
+      <width>321</width>
+      <height>461</height>
      </rect>
     </property>
     <property name="maximumSize">
      <size>
-      <width>220</width>
+      <width>99999</width>
       <height>16777215</height>
      </size>
     </property>
@@ -272,13 +272,80 @@
      </property>
     </column>
    </widget>
+   <widget class="QPushButton" name="BtnAddplan">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>370</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>添加计划</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>241</width>
+      <height>381</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>每日计划</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateEdit" name="DteDaily">
+         <property name="minimumDate">
+          <date>
+           <year>2022</year>
+           <month>7</month>
+           <day>14</day>
+          </date>
+         </property>
+         <property name="displayFormat">
+          <string>yyyy年M月d日</string>
+         </property>
+         <property name="calendarPopup">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTreeWidget" name="MyDailyPlanlist">
+       <column>
+        <property name="text">
+         <string>完成</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>任务名称</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>845</width>
+     <width>1176</width>
      <height>23</height>
     </rect>
    </property>

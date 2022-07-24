@@ -95,13 +95,13 @@
     <ClCompile Include="AfThread_Win32.cpp" />
     <ClCompile Include="ChangeTaskInfomation.cpp" />
     <ClCompile Include="DataSource.cpp" />
-    <ClCompile Include="SetQCheckBox.cpp" />
+    <ClCompile Include="Plan.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TODO.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SetQCheckBox.h" />
+    <QtMoc Include="Plan.h" />
     <QtMoc Include="ChangeTaskInfomation.h" />
     <QtMoc Include="AddTaskChild.h" />
     <ClInclude Include="AfSocket.h" />
